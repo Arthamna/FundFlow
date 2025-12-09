@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Galang Dana - FundFlow</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body onload="checkAuth('user')">
+    <nav class="navbar navbar-light bg-white shadow-sm mb-4">
+        <div class="container">
+            <a class="navbar-brand" href="user-dashboard.html">FundFlow.</a>
+            <span class="text-muted">Buat Galang Dana</span>
+        </div>
+    </nav>
+
+    <div class="container" style="max-width: 700px;">
+        <div class="card p-4 mb-5">
+            <h3 class="fw-bold mb-4">Form Pengajuan Galang Dana</h3>
+            <form onsubmit="submitFundraise(event)">
+                <div class="mb-3">
+                    <label class="form-label">Judul Kampanye</label>
+                    <input type="text" id="frTitle" class="form-control" required placeholder="Contoh: Bantu Pembangunan Masjid...">
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Target Donasi (Rp)</label>
+                    <input type="number" id="frTarget" class="form-control" required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Deskripsi Lengkap / Cerita</label>
+                    <textarea id="frDesc" class="form-control" rows="5" required></textarea>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Upload Foto Utama</label>
+                        <input type="file" class="form-control" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Upload KTP</label>
+                        <input type="file" class="form-control" required>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Nomor Rekening Pencairan</label>
+                    <input type="text" class="form-control" required placeholder="Bank - No. Rek - Atas Nama">
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label">Rencana Penggunaan Dana</label>
+                    <textarea class="form-control" rows="3" placeholder="Rincian singkat..."></textarea>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <a href="user-dashboard.html" class="btn btn-light flex-grow-1">Batal</a>
+                    <button type="submit" class="btn btn-primary flex-grow-1">Ajukan Sekarang</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script src="../assets/js/script.js"></script>
+</body>
+</html>
