@@ -2,53 +2,167 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - FundFlow</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/landing.css">
+    <link rel="stylesheet" href="../assets/css/admin-dashboard.css">
 </head>
 <body onload="loadAdminDashboard()">
     
-    <nav class="navbar navbar-dark bg-primary sticky-top mb-4">
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
         <div class="container">
-            <span class="navbar-brand mb-0 h1">Admin Dashboard</span>
-            <button onclick="logout()" class="btn btn-outline-light btn-sm">Logout</button>
+            <a class="navbar-brand d-flex align-items-center" href="../landing-page.html">
+                <i class="bi bi-heart-fill text-primary me-2"></i>
+                <span class="fw-bold">FundFlow.</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center">
+                                        <li class="nav-item ms-lg-3">
+                        <button onclick="logout()" class="btn btn-outline-danger btn-sm">Logout</button>
+                    </li>
+                </ul>
+            </div>
         </div>
     </nav>
 
-    <div class="container">
-        <div class="row mb-4">
-            <div class="col-md-3">
-                <div class="card p-3 text-center border-0 shadow-sm">
-                    <small class="text-muted">Total Pending</small>
-                    <h3 class="fw-bold text-warning">99+</h3>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card p-3 text-center border-0 shadow-sm">
-                    <small class="text-muted">Verified</small>
-                    <h3 class="fw-bold text-success">150</h3>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card p-3 text-center border-0 shadow-sm">
-                    <small class="text-muted">Rejected</small>
-                    <h3 class="fw-bold text-danger">12</h3>
+    <!-- Hero Section -->
+    <section class="admin-hero">
+        <div class="container">
+            <div class="row align-items-center min-vh-30 py-5">
+                <div class="col-12 text-center text-white">
+                    <h1 class="admin-title mb-3">Admin Dashboard</h1>
+                    <p class="admin-subtitle">Manage and review fundraising campaigns</p>
                 </div>
             </div>
         </div>
+    </section>
 
-        <div class="card border-0 shadow-sm">
-            <div class="card-header bg-white py-3">
-                <h5 class="fw-bold mb-0">Daftar Pengajuan Masuk</h5>
-            </div>
-            <div class="card-body">
-                <div id="adminCampaignList">
+    <!-- Content Section -->
+    <section class="content-section">
+        <div class="container">
+            <!-- Stats Cards -->
+            <h2 class="section-title mb-4">Campaign Status</h2>
+            <div class="row mb-4">
+                <div class="col-md-4 mb-3">
+                    <div class="stats-card">
+                        <div class="stats-icon pending">
+                            <i class="bi bi-hourglass-split"></i>
+                        </div>
+                        <div class="stats-number text-warning" id="pendingCount">0</div>
+                        <div class="stats-label">Pending</div>
                     </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="stats-card">
+                        <div class="stats-icon verified">
+                            <i class="bi bi-check-circle-fill"></i>
+                        </div>
+                        <div class="stats-number text-success" id="verifiedCount">0</div>
+                        <div class="stats-label">Verified</div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="stats-card">
+                        <div class="stats-icon rejected">
+                            <i class="bi bi-x-circle-fill"></i>
+                        </div>
+                        <div class="stats-number text-danger" id="rejectedCount">0</div>
+                        <div class="stats-label">Rejected</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filter Tabs -->
+            <div class="filter-tabs">
+                <button class="filter-tab active" onclick="filterCampaigns('all')">
+                    Pending
+                </button>
+                <button class="filter-tab" onclick="filterCampaigns('verified')">
+                    Verified
+                </button>
+                <button class="filter-tab" onclick="filterCampaigns('rejected')">
+                    Rejected
+                </button>
+            </div>
+
+            <!-- Campaign List -->
+            <div id="adminCampaignList">
+                <!-- Campaigns will be loaded here dynamically -->
             </div>
         </div>
-    </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-5 bg-dark text-white mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <h5 class="fw-bold mb-3">
+                        <i class="bi bi-heart-fill text-primary me-2"></i>FundFlow.
+                    </h5>
+                    <p class="text-white-50 small">Making the world a better place, one donation at a time. Join our community of changemakers today.</p>
+                    <div class="d-flex gap-2 mt-3">
+                        <a href="#" class="btn btn-outline-light btn-sm rounded-circle">
+                            <i class="bi bi-facebook"></i>
+                        </a>
+                        <a href="#" class="btn btn-outline-light btn-sm rounded-circle">
+                            <i class="bi bi-twitter"></i>
+                        </a>
+                        <a href="#" class="btn btn-outline-light btn-sm rounded-circle">
+                            <i class="bi bi-instagram"></i>
+                        </a>
+                        <a href="#" class="btn btn-outline-light btn-sm rounded-circle">
+                            <i class="bi bi-linkedin"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="col-md-2 mb-4">
+                    <h6 class="fw-bold mb-3">Quick Links</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="../landing-page.html" class="text-white-50 text-decoration-none small">Home</a></li>
+                        <li><a href="user-dashboard.html" class="text-white-50 text-decoration-none small">Dashboard</a></li>
+                        <li><a href="open-fundraise.html" class="text-white-50 text-decoration-none small">Open Fundraise</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <h6 class="fw-bold mb-3">Support</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-white-50 text-decoration-none small">Help Center</a></li>
+                        <li><a href="#" class="text-white-50 text-decoration-none small">Contact Us</a></li>
+                        <li><a href="#" class="text-white-50 text-decoration-none small">Privacy Policy</a></li>
+                        <li><a href="#" class="text-white-50 text-decoration-none small">Terms of Service</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <h6 class="fw-bold mb-3">Newsletter</h6>
+                    <p class="text-white-50 small">Stay updated with our latest campaigns</p>
+                    <div class="input-group input-group-sm">
+                        <input type="email" class="form-control" placeholder="Your email">
+                        <button class="btn btn-primary" type="button">
+                            <i class="bi bi-send"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <hr class="border-secondary my-4">
+            <div class="text-center text-white-50 small">
+                <p class="mb-0">&copy; 2025 FundFlow. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
 
     <script src="../assets/js/script.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../assets/js/admin-dashboard.js"></script>
 </body>
 </html>

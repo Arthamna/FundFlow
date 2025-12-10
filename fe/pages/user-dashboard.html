@@ -6,48 +6,544 @@
     <title>Dashboard - FundFlow</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/landing.css">
+    <style>
+        /* Add subtle background pattern */
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 20% 50%, rgba(2, 169, 92, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(0, 217, 192, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 40% 20%, rgba(31, 162, 255, 0.03) 0%, transparent 50%);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .dashboard-hero {
+            position: relative;
+            min-height: 30vh;
+            background: linear-gradient(135deg, 
+                rgba(2, 169, 92, 0.8) 0%, 
+                rgba(0, 217, 192, 0.8) 50%,
+                rgba(31, 162, 255, 0.7) 100%),
+                url('https://images.unsplash.com/photo-1532629345422-7515f3d16bb6?w=1600&h=400&fit=crop&q=80');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            margin-bottom: 3rem;
+            overflow: hidden;
+        }
+
+        .dashboard-hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: transparent;
+            z-index: 1;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        .dashboard-hero h1 {
+            font-size: 3.5rem;
+            color: white;
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.5);
+            position: relative;
+            z-index: 2;
+            font-weight: 700;
+        }
+
+        .dashboard-hero .lead {
+            position: relative;
+            color: white;
+            font-size: 1.3rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            z-index: 2;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .dashboard-hero .container {
+            position: relative;
+            z-index: 2;
+        }
+
+        .campaign-scroll-container {
+            overflow-x: auto;
+            overflow-y: hidden;
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary-green) #f0f0f0;
+            padding-bottom: 1rem;
+        }
+
+        .campaign-scroll-container::-webkit-scrollbar {
+            height: 8px;
+        }
+
+        .campaign-scroll-container::-webkit-scrollbar-track {
+            background: #f0f0f0;
+            border-radius: 10px;
+        }
+
+        .campaign-scroll-container::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, var(--primary-green), var(--hope-teal));
+            border-radius: 10px;
+        }
+
+        .campaign-scroll-wrapper {
+            display: flex;
+            gap: 1.5rem;
+            min-width: max-content;
+        }
+
+        .campaign-scroll-wrapper .campaign-card {
+            flex: 0 0 300px;
+            width: 300px;
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .campaign-scroll-wrapper .campaign-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 40px rgba(2, 169, 92, 0.25) !important;
+        }
+
+        /* Fallback for images that don't load */
+        .campaign-card img {
+            min-height: 200px;
+            object-fit: cover;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .campaign-card:nth-child(1) img {
+            background: linear-gradient(135deg, #FF6B9D 0%, #FFA07A 100%);
+        }
+
+        .campaign-card:nth-child(2) img {
+            background: linear-gradient(135deg, #02A95C 0%, #6BCF9F 100%);
+        }
+
+        .campaign-card:nth-child(3) img {
+            background: linear-gradient(135deg, #60D1F6 0%, #1FA2FF 100%);
+        }
+
+        .campaign-card:nth-child(4) img {
+            background: linear-gradient(135deg, #FFD93D 0%, #FFB088 100%);
+        }
+
+        .campaign-card:nth-child(5) img {
+            background: linear-gradient(135deg, #1FA2FF 0%, #A78BFA 100%);
+        }
+
+        .campaign-card:nth-child(6) img {
+            background: linear-gradient(135deg, #6BCF9F 0%, #00D9C0 100%);
+        }
+
+        .status-section {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9ff 100%);
+            border-radius: 30px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .status-section::before {
+            content: '';
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            width: 150px;
+            height: 150px;
+            background: radial-gradient(circle, rgba(2, 169, 92, 0.1), transparent);
+            border-radius: 50%;
+        }
+
+        .status-section::after {
+            content: '';
+        #myCampaignList .card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 10px 25px rgba(2, 169, 92, 0.15) !important;
+        }
+
+        /* Floating decorative elements */
+        .decorative-circle {
+            position: fixed;
+            border-radius: 50%;
+            opacity: 0.6;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .circle-1 {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, rgba(2, 169, 92, 0.1), rgba(0, 217, 192, 0.1));
+            top: 15%;
+            right: 5%;
+            animation: float 8s ease-in-out infinite;
+        }
+
+        .circle-2 {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, rgba(31, 162, 255, 0.1), rgba(96, 209, 246, 0.1));
+            bottom: 20%;
+            left: 8%;
+            animation: float 10s ease-in-out infinite reverse;
+<body onload="loadUserDashboard()">
+    
+    <!-- Decorative floating elements -->
+    <div class="decorative-circle circle-1"></div>
+    <div class="decorative-circle circle-2"></div>
+    <div class="decorative-circle circle-3"></div>
+    
+    <!-- Navigation -->
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, rgba(255, 217, 61, 0.08), rgba(255, 176, 136, 0.08));
+            top: 40%;
+            left: 3%;
+            animation: float 12s ease-in-out infinite;
+        }
+
+        /* Campaign section enhancements */
+        .bg-light {
+            background: linear-gradient(180deg, #f8f9fa 0%, #ffffff 100%) !important;
+            position: relative;
+        }
+
+        .bg-light::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                var(--primary-green) 50%, 
+                transparent 100%);
+            opacity: 0.3;
+        }
+    </style>
+    <style>height: 100px;
+            background: radial-gradient(circle, rgba(0, 217, 192, 0.08), transparent);
+            border-radius: 50%;
+        }
+
+        .status-section h4 i {
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        #myCampaignList .card {
+            border-radius: 20px;
+            border-left: 5px solid var(--primary-green);
+            transition: all 0.3s ease;
+        }
+
+        #myCampaignList .card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 10px 25px rgba(2, 169, 92, 0.15) !important;
+        }
+    </style>
 </head>
 <body onload="loadUserDashboard()">
     
+    <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
         <div class="container">
-            <a class="navbar-brand" href="#">FundFlow.</a>
-            <div class="d-flex align-items-center gap-3">
-                <span id="userNameDisplay" class="fw-bold text-dark"></span>
-                <a href="open-fundraise.html" class="btn btn-outline-primary btn-sm">Open Fundraise</a>
-                <button onclick="logout()" class="btn btn-link text-secondary text-decoration-none">Logout</button>
+            <a class="navbar-brand d-flex align-items-center" href="../landing-page.html">
+                <i class="bi bi-heart-fill text-primary me-2"></i>
+                <span class="fw-bold">FundFlow.</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item">
+                        <span id="userNameDisplay" class="nav-link fw-semibold text-dark"></span>
+                    </li>
+                    <li class="nav-item ms-2">
+                        <a href="open-fundraise.html" class="btn btn-accent btn-sm">
+                            <i class="bi bi-plus-circle me-1"></i>Open Fundraise
+                        </a>
+                    </li>
+                    <li class="nav-item ms-2">
+                        <button onclick="logout()" class="btn btn-outline-danger btn-sm">
+                            <i class="bi bi-box-arrow-right me-1"></i>Logout
+                        </button>
+                    </li>
+                </ul>
             </div>
         </div>
     </nav>
 
-    <header class="hero-section text-center mb-5">
+    <!-- Hero Section - Smaller -->
+    <section class="dashboard-hero text-center">
         <div class="container">
-            <h1 class="display-4 fw-bold">Make a Difference Today</h1>
-            <p class="lead mb-4">Support causes you care about or start your own fundraising campaign.</p>
         </div>
-    </header>
+    </section>
 
+    <!-- My Campaigns Status -->
     <div class="container mb-5">
-        <h4 class="fw-bold mb-3">Status Pengajuan Saya</h4>
-        <div id="myCampaignList" class="row mb-5">
-            <p class="text-muted">Belum ada pengajuan.</p>
-        </div>
-
-        <hr>
-
-        <div class="d-flex justify-content-between align-items-center mb-4 mt-5">
-            <h3 class="fw-bold">Help Them!</h3>
-            <div class="text-muted">
-                <button class="btn btn-light rounded-circle"><i class="bi bi-chevron-left"></i></button>
-                <button class="btn btn-light rounded-circle"><i class="bi bi-chevron-right"></i></button>
+        <div class="status-section">
+            <h4 class="fw-bold mb-3">
+                <i class="bi bi-folder-check me-2 text-primary"></i>Status Pengajuan Saya
+            </h4>
+            <div id="myCampaignList" class="row mb-0">
+                <p class="text-muted">Belum ada pengajuan.</p>
             </div>
         </div>
-
-        <div id="campaignList" class="row">
-            </div>
     </div>
 
+    <!-- Featured Campaigns Section -->
+    <section class="py-4 bg-light">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2 class="fw-bold display-6 mb-2">Help Them!</h2>
+                </div>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-outline-secondary btn-sm rounded-circle" id="scrollLeftBtn">
+                        <i class="bi bi-chevron-left"></i>
+                    </button>
+                    <button class="btn btn-outline-secondary btn-sm rounded-circle" id="scrollRightBtn">
+                        <i class="bi bi-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="campaign-scroll-container" id="campaignScrollContainer">
+                <div class="campaign-scroll-wrapper" id="campaignList">
+                    <!-- Campaign cards will be loaded here by JavaScript -->
+                    <!-- Sample cards for demonstration -->
+                    <div class="col">
+                        <div class="card campaign-card h-100 border-0 shadow-sm">
+                            <div class="card-img-top" style="height: 200px; background: linear-gradient(135deg, #FF6B9D 0%, #FFA07A 100%), url('../assets/images/donate-page.png'); background-size: cover; background-position: center; background-blend-mode: overlay;"></div>
+                            <div class="card-body">
+                                <span class="badge bg-danger mb-2">Emergency</span>
+                                <h5 class="card-title fw-bold mb-2">Help Save Alia's Future</h5>
+                                <p class="card-text text-muted small mb-3">Urgent support needed for education expenses...</p>
+                                <div class="progress mb-2" style="height: 8px;">
+                                    <div class="progress-bar" role="progressbar" style="width: 67%"></div>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <small class="text-muted">Rp 6,750,000 raised</small>
+                                    <small class="fw-bold text-primary">67%</small>
+                                </div>
+                                <a href="donation-detail.html" class="btn btn-primary btn-sm w-100">
+                                    <i class="bi bi-hand-thumbs-up me-1"></i>Donate
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="card campaign-card h-100 border-0 shadow-sm">
+                            <div class="card-img-top" style="height: 200px; background: linear-gradient(135deg, #02A95C 0%, #6BCF9F 100%), url('../assets/images/donate-page.png'); background-size: cover; background-position: center; background-blend-mode: overlay;"></div>
+                            <div class="card-body">
+                                <span class="badge bg-success mb-2">Education</span>
+                                <h5 class="card-title fw-bold mb-2">Build Library for Kids</h5>
+                                <p class="card-text text-muted small mb-3">Help us build a community library...</p>
+                                <div class="progress mb-2" style="height: 8px;">
+                                    <div class="progress-bar bg-success" role="progressbar" style="width: 42%"></div>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <small class="text-muted">Rp 4,200,000 raised</small>
+                                    <small class="fw-bold text-success">42%</small>
+                                </div>
+                                <a href="donation-detail.html" class="btn btn-primary btn-sm w-100">
+                                    <i class="bi bi-hand-thumbs-up me-1"></i>Donate
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="card campaign-card h-100 border-0 shadow-sm">
+                            <div class="card-img-top" style="height: 200px; background: linear-gradient(135deg, #60D1F6 0%, #1FA2FF 100%), url('../assets/images/donate-page.png'); background-size: cover; background-position: center; background-blend-mode: overlay;"></div>
+                            <div class="card-body">
+                                <span class="badge bg-info mb-2">Health</span>
+                                <h5 class="card-title fw-bold mb-2">Support Cancer Research</h5>
+                                <p class="card-text text-muted small mb-3">Every donation helps fund critical research...</p>
+                                <div class="progress mb-2" style="height: 8px;">
+                                    <div class="progress-bar bg-info" role="progressbar" style="width: 89%"></div>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <small class="text-muted">Rp 8,900,000 raised</small>
+                                    <small class="fw-bold text-info">89%</small>
+                                </div>
+                                <a href="donation-detail.html" class="btn btn-primary btn-sm w-100">
+                                    <i class="bi bi-hand-thumbs-up me-1"></i>Donate
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="card campaign-card h-100 border-0 shadow-sm">
+                            <div class="card-img-top" style="height: 200px; background: linear-gradient(135deg, #FFD93D 0%, #FFB088 100%), url('../assets/images/donate-page.png'); background-size: cover; background-position: center; background-blend-mode: overlay;"></div>
+                            <div class="card-body">
+                                <span class="badge bg-warning mb-2">Community</span>
+                                <h5 class="card-title fw-bold mb-2">Clean Water for All</h5>
+                                <p class="card-text text-muted small mb-3">Help provide clean drinking water...</p>
+                                <div class="progress mb-2" style="height: 8px;">
+                                    <div class="progress-bar bg-warning" role="progressbar" style="width: 55%"></div>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <small class="text-muted">Rp 5,500,000 raised</small>
+                                    <small class="fw-bold text-warning">55%</small>
+                                </div>
+                                <a href="donation-detail.html" class="btn btn-primary btn-sm w-100">
+                                    <i class="bi bi-hand-thumbs-up me-1"></i>Donate
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="card campaign-card h-100 border-0 shadow-sm">
+                            <div class="card-img-top" style="height: 200px; background: linear-gradient(135deg, #1FA2FF 0%, #A78BFA 100%), url('../assets/images/donate-page.png'); background-size: cover; background-position: center; background-blend-mode: overlay;"></div>
+                            <div class="card-body">
+                                <span class="badge bg-primary mb-2">Disaster Relief</span>
+                                <h5 class="card-title fw-bold mb-2">Flood Victims Support</h5>
+                                <p class="card-text text-muted small mb-3">Emergency aid for flood-affected families...</p>
+                                <div class="progress mb-2" style="height: 8px;">
+                                    <div class="progress-bar" role="progressbar" style="width: 78%"></div>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <small class="text-muted">Rp 7,800,000 raised</small>
+                                    <small class="fw-bold text-primary">78%</small>
+                                </div>
+                                <a href="donation-detail.html" class="btn btn-primary btn-sm w-100">
+                                    <i class="bi bi-hand-thumbs-up me-1"></i>Donate
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="card campaign-card h-100 border-0 shadow-sm">
+                            <div class="card-img-top" style="height: 200px; background: linear-gradient(135deg, #6BCF9F 0%, #00D9C0 100%), url('../assets/images/donate-page.png'); background-size: cover; background-position: center; background-blend-mode: overlay;"></div>
+                            <div class="card-body">
+                                <span class="badge bg-secondary mb-2">Animal Welfare</span>
+                                <h5 class="card-title fw-bold mb-2">Save Stray Animals</h5>
+                                <p class="card-text text-muted small mb-3">Shelter and care for abandoned pets...</p>
+                                <div class="progress mb-2" style="height: 8px;">
+                                    <div class="progress-bar bg-secondary" role="progressbar" style="width: 34%"></div>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <small class="text-muted">Rp 3,400,000 raised</small>
+                                    <small class="fw-bold text-secondary">34%</small>
+                                </div>
+                                <a href="donation-detail.html" class="btn btn-primary btn-sm w-100">
+                                    <i class="bi bi-hand-thumbs-up me-1"></i>Donate
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-5 bg-dark text-white mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <h5 class="fw-bold mb-3">
+                        <i class="bi bi-heart-fill text-primary me-2"></i>FundFlow.
+                    </h5>
+                    <p class="text-white-50 small">Making the world a better place, one donation at a time. Join our community of changemakers today.</p>
+                    <div class="d-flex gap-2 mt-3">
+                        <a href="#" class="btn btn-outline-light btn-sm rounded-circle">
+                            <i class="bi bi-facebook"></i>
+                        </a>
+                        <a href="#" class="btn btn-outline-light btn-sm rounded-circle">
+                            <i class="bi bi-twitter"></i>
+                        </a>
+                        <a href="#" class="btn btn-outline-light btn-sm rounded-circle">
+                            <i class="bi bi-instagram"></i>
+                        </a>
+                        <a href="#" class="btn btn-outline-light btn-sm rounded-circle">
+                            <i class="bi bi-linkedin"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="col-md-2 mb-4">
+                    <h6 class="fw-bold mb-3">Quick Links</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="../landing-page.html" class="text-white-50 text-decoration-none small">Home</a></li>
+                        <li><a href="user-dashboard.html" class="text-white-50 text-decoration-none small">Dashboard</a></li>
+                        <li><a href="open-fundraise.html" class="text-white-50 text-decoration-none small">Open Fundraise</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <h6 class="fw-bold mb-3">Support</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-white-50 text-decoration-none small">Help Center</a></li>
+                        <li><a href="#" class="text-white-50 text-decoration-none small">Contact Us</a></li>
+                        <li><a href="#" class="text-white-50 text-decoration-none small">Privacy Policy</a></li>
+                        <li><a href="#" class="text-white-50 text-decoration-none small">Terms of Service</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <h6 class="fw-bold mb-3">Newsletter</h6>
+                    <p class="text-white-50 small">Stay updated with our latest campaigns</p>
+                    <div class="input-group input-group-sm">
+                        <input type="email" class="form-control" placeholder="Your email">
+                        <button class="btn btn-primary" type="button">
+                            <i class="bi bi-send"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <hr class="border-secondary my-4">
+            <div class="text-center text-white-50 small">
+                <p class="mb-0">&copy; 2025 FundFlow. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
     <script src="../assets/js/script.js"></script>
+    <script>
+        // Horizontal scroll functionality
+        const scrollContainer = document.getElementById('campaignScrollContainer');
+        const scrollLeftBtn = document.getElementById('scrollLeftBtn');
+        const scrollRightBtn = document.getElementById('scrollRightBtn');
+
+        scrollLeftBtn.addEventListener('click', () => {
+            scrollContainer.scrollBy({ left: -300, behavior: 'smooth' });
+        });
+
+        scrollRightBtn.addEventListener('click', () => {
+            scrollContainer.scrollBy({ left: 300, behavior: 'smooth' });
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

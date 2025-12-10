@@ -6,9 +6,27 @@
     --text-dark: #212529;
 }
 
+/* Page Transition Effects */
 body {
     font-family: 'Poppins', sans-serif; /* Pastikan import font ini di HTML */
     background-color: var(--bg-light);
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Smooth transitions for all interactive elements */
+* {
+    transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
 .navbar-brand {
@@ -67,12 +85,128 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: white;
+    /* background: linear-gradient(rgba(2, 169, 92, 0.85), rgba(0, 217, 192, 0.85)), url('../images/bg.png'); */
+    background-image: url('../images/bg.png');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    position: relative;
+    overflow: hidden;
 }
+
 .auth-card {
-    max-width: 400px;
+    max-width: 440px;
     width: 100%;
-    padding: 2rem;
+    padding: 3rem 2.5rem;
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(20px);
+    border-radius: 24px;
+    box-shadow: 0 20px 60px rgba(2, 169, 92, 0.25);
+    position: relative;
+    z-index: 1;
+    border: 2px solid rgba(2, 169, 92, 0.1);
+}
+
+.auth-title {
+    color: #02A95C;
+    font-size: 2rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #02A95C, #00D9C0);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.auth-card .form-label {
+    font-weight: 500;
+    font-size: 0.9rem;
+    color: var(--text-dark);
+    margin-bottom: 0.5rem;
+}
+
+.auth-card .form-control {
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 0.75rem 1rem;
+    font-size: 0.95rem;
+    transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.auth-card .form-control:focus {
+    border-color: #02A95C;
+    box-shadow: 0 0 0 3px rgba(2, 169, 92, 0.1);
+    transform: translateY(-2px);
+}
+
+.auth-card .form-control::placeholder {
+    color: #999;
+    font-size: 0.9rem;
+}
+
+.auth-card .btn-primary {
+    background: linear-gradient(135deg, #02A95C, #00D9C0) !important;
+    border: none !important;
+    border-radius: 50px !important;
+    padding: 0.75rem !important;
+    font-weight: 600 !important;
+    font-size: 1rem !important;
+    transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55) !important;
+    box-shadow: 0 8px 20px rgba(2, 169, 92, 0.3) !important;
+    position: relative;
+    overflow: hidden;
+}
+
+.auth-card .btn-primary::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+}
+
+.auth-card .btn-primary:hover::before {
+    width: 300px;
+    height: 300px;
+}
+
+.auth-card .btn-primary:hover {
+    transform: translateY(-3px) scale(1.05) !important;
+    box-shadow: 0 12px 30px rgba(2, 169, 92, 0.4) !important;
+}
+
+.auth-card p {
+    font-size: 0.95rem;
+    color: #666;
+}
+
+.auth-card p a {
+    text-decoration: none;
+    color: #02A95C;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.auth-card p a:hover {
+    color: #00D9C0;
+    text-decoration: underline;
+}
+
+.auth-card small {
+    font-size: 0.8rem;
+    display: block;
+    margin-top: 0.25rem;
+}
+
+.auth-card h5 {
+    background: linear-gradient(135deg, #02A95C, #00D9C0);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
 /* Admin Status Badges */

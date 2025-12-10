@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment - FundFlow</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/landing.css">
+    <style>
+        :root {
+            --primary-green: #02A95C;
+            --hope-teal: #00D9C0;
+            --primary-blue: #1FA2FF;
+            --warm-coral: #FF6B9D;
+            --sunshine-yellow: #FFD93D;
+        }
+
+        * {
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 20% 50%, rgba(2, 169, 92, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(0, 217, 192, 0.03) 0%, transparent 50%);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* Decorative floating elements */
+        .decorative-circle {
+            position: fixed;
+            border-radius: 50%;
+            opacity: 0.6;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .circle-1 {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, rgba(2, 169, 92, 0.1), rgba(0, 217, 192, 0.1));
+            top: 15%;
+            right: 5%;
+            animation: float 8s ease-in-out infinite;
+        }
+
+        .circle-2 {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, rgba(31, 162, 255, 0.1), rgba(96, 209, 246, 0.1));
+            bottom: 20%;
+            left: 8%;
+            animation: float 10s ease-in-out infinite reverse;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .payment-container {
+            max-width: 500px;
+            width: 100%;
+            padding: 20px;
+        }
+
+        .payment-card {
+            background: white;
+            border-radius: 30px;
+            padding: 3rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .payment-card::before {
+            content: '';
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            width: 150px;
+            height: 150px;
+            background: radial-gradient(circle, rgba(2, 169, 92, 0.08), transparent);
+            border-radius: 50%;
+        }
+
+        .payment-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .payment-header h3 {
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .countdown {
+            color: #dc3545;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .form-label span {
+            color: #dc3545;
+        }
+
+        .form-control, .form-select {
+            border: 2px solid #e9ecef;
+            border-radius: 15px;
+            padding: 0.75rem 1rem;
+            transition: all 0.3s;
+            background: #f8f9fa;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-green);
+            box-shadow: 0 0 0 0.2rem rgba(2, 169, 92, 0.1);
+            background: white;
+        }
+
+        .total-box {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border: 2px solid #e9ecef;
+        }
+
+        .total-box .row {
+            margin-bottom: 0.5rem;
+        }
+
+        .total-box .row:last-child {
+            margin-bottom: 0;
+            padding-top: 1rem;
+            border-top: 2px solid #dee2e6;
+        }
+
+        .total-label {
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+
+        .total-value {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .detail-link {
+            color: var(--primary-green);
+            font-size: 0.9rem;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .detail-link:hover {
+            text-decoration: underline;
+        }
+
+        .btn-cancel {
+            background: #e9ecef;
+            border: none;
+            color: #6c757d;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .btn-cancel:hover {
+            background: #dee2e6;
+            color: #495057;
+        }
+
+        .btn-confirm {
+            background: linear-gradient(135deg, var(--primary-green), var(--hope-teal));
+            border: none;
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s;
+            box-shadow: 0 10px 30px rgba(2, 169, 92, 0.3);
+        }
+
+        .btn-confirm:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(2, 169, 92, 0.4);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    
+    <!-- Decorative floating elements -->
+    <div class="decorative-circle circle-1"></div>
+    <div class="decorative-circle circle-2"></div>
+
+    <div class="payment-container">
+        <div class="payment-card">
+            <div class="payment-header">
+                <h3>Selesaikan Pembayaran dalam</h3>
+                <div class="countdown">
+                    <i class="bi bi-clock-fill me-2"></i><span id="countdown">1:00</span> menit
+                </div>
+            </div>
+
+            <form id="paymentForm" onsubmit="processPayment(event)">
+                <div class="mb-3">
+                    <label class="form-label">Nomor Virtual Account <span>*</span></label>
+                    <input type="text" class="form-control" value="8048620503522020" readonly>
+                </div>
+
+                <div class="total-box">
+                    <div class="row">
+                        <div class="col-6 total-label">Total Donasi</div>
+                        <div class="col-6 text-end">
+                            <span class="total-value" id="totalDonation">Rp55.500</span>
+                            <a href="#" class="detail-link ms-2">Detail</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-grid gap-2 mb-2">
+                    <button type="submit" class="btn btn-confirm">
+                        <i class="bi bi-check-circle me-2"></i>Konfirmasi Pembayaran
+                    </button>
+                </div>
+
+                <div class="d-grid">
+                    <a href="donation-detail.html" class="btn btn-cancel">
+                        <i class="bi bi-x-circle me-2"></i>Batalkan Pembayaran
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="../assets/js/script.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Load payment data from URL params
+        window.addEventListener('DOMContentLoaded', function() {
+            const params = new URLSearchParams(window.location.search);
+            const amount = params.get('amount');
+            if (amount) {
+                document.getElementById('totalDonation').textContent = formatRupiah(parseInt(amount));
+            }
+        });
+
+        // Countdown timer
+        let timeLeft = 60; // 60 seconds
+        const countdownElement = document.getElementById('countdown');
+        
+        const countdownTimer = setInterval(() => {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            countdownElement.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            
+            if (timeLeft <= 0) {
+                clearInterval(countdownTimer);
+                alert('Waktu pembayaran habis!');
+                window.location.href = 'donation-detail.html';
+            }
+            timeLeft--;
+        }, 1000);
+
+        // Process payment
+        function processPayment(event) {
+            event.preventDefault();
+            
+            // Clear countdown
+            clearInterval(countdownTimer);
+            
+            // Show success message
+            alert('Pembayaran berhasil! Terima kasih atas donasi Anda.');
+            
+            // Redirect to dashboard
+            window.location.href = 'user-dashboard.html';
+        }
+
+        // Format Rupiah
+        function formatRupiah(number) {
+            return 'Rp' + number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+        }
+    </script>
+</body>
+</html>

@@ -2,74 +2,501 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Donasi - FundFlow</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/landing.css">
+    <style>
+        :root {
+            --primary-green: #02A95C;
+            --hope-teal: #00D9C0;
+            --primary-blue: #1FA2FF;
+            --warm-coral: #FF6B9D;
+            --sunshine-yellow: #FFD93D;
+        }
+
+        * {
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 20% 50%, rgba(2, 169, 92, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(0, 217, 192, 0.03) 0%, transparent 50%);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* Decorative floating elements */
+        .decorative-circle {
+            position: fixed;
+            border-radius: 50%;
+            opacity: 0.6;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .circle-1 {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, rgba(2, 169, 92, 0.1), rgba(0, 217, 192, 0.1));
+            top: 15%;
+            right: 5%;
+            animation: float 8s ease-in-out infinite;
+        }
+
+        .circle-2 {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, rgba(31, 162, 255, 0.1), rgba(96, 209, 246, 0.1));
+            bottom: 20%;
+            left: 8%;
+            animation: float 10s ease-in-out infinite reverse;
+        }
+
+        .circle-3 {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, rgba(255, 217, 61, 0.08), rgba(255, 176, 136, 0.08));
+            top: 40%;
+            left: 3%;
+            animation: float 12s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        /* Hero section - matching user dashboard */
+        .hero-banner {
+            position: relative;
+            min-height: 30vh;
+            background: linear-gradient(135deg, 
+                rgba(2, 169, 92, 0.8) 0%, 
+                rgba(0, 217, 192, 0.8) 50%,
+                rgba(31, 162, 255, 0.7) 100%),
+                url('https://images.unsplash.com/photo-1532629345422-7515f3d16bb6?w=1600&h=400&fit=crop&q=80');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            margin-bottom: 3rem;
+            overflow: hidden;
+        }
+
+        .hero-content {
+            position: relative;
+            padding: 80px 0;
+            text-align: center;
+            color: white;
+            z-index: 2;
+        }
+
+        .hero-content h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.5);
+            margin-bottom: 1rem;
+        }
+
+        .hero-content .badge {
+            font-size: 1rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 50px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .donation-card {
+            background: white;
+            border-radius: 30px;
+            padding: 2rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .left-card {
+            min-height: 700px;
+        }
+
+        .right-card {
+            min-height: 700px;
+        }
+
+        .donation-card::before {
+            content: '';
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            width: 150px;
+            height: 150px;
+            background: radial-gradient(circle, rgba(2, 169, 92, 0.08), transparent);
+            border-radius: 50%;
+        }
+
+        .donation-options {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .donation-option {
+            position: relative;
+        }
+
+        .donation-option input[type="radio"] {
+            display: none;
+        }
+
+        .donation-option label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            border: 2px solid #e9ecef;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+            background: #f8f9fa;
+        }
+
+        .donation-option input[type="radio"]:checked + label {
+            border-color: var(--primary-green);
+            background: rgba(2, 169, 92, 0.1);
+            color: var(--primary-green);
+        }
+
+        .donation-option label:hover {
+            border-color: var(--primary-green);
+            transform: translateY(-2px);
+        }
+
+        .form-control, .form-select {
+            border: 2px solid #e9ecef;
+            border-radius: 15px;
+            padding: 0.75rem 1rem;
+            transition: all 0.3s;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-green);
+            box-shadow: 0 0 0 0.2rem rgba(2, 169, 92, 0.1);
+        }
+
+        .prayer-section {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .prayer-item {
+            padding: 1rem;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .prayer-item:last-child {
+            border-bottom: none;
+        }
+
+        .btn-donate {
+            background: linear-gradient(135deg, var(--warm-coral), #ff8f6b);
+            border: none;
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            width: 100%;
+            transition: all 0.3s;
+            box-shadow: 0 10px 30px rgba(255, 107, 157, 0.3);
+        }
+
+        .btn-donate:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(255, 107, 157, 0.4);
+            color: white;
+        }
+
+        .payment-option {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            border: 2px solid #e9ecef;
+            border-radius: 15px;
+            margin-bottom: 0.75rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .payment-option:hover {
+            border-color: var(--primary-green);
+            background: rgba(2, 169, 92, 0.05);
+        }
+
+        .payment-option input[type="radio"] {
+            width: 20px;
+            height: 20px;
+        }
+
+        .payment-option.active {
+            border-color: var(--primary-green);
+            background: rgba(2, 169, 92, 0.1);
+        }
+    </style>
 </head>
 <body onload="loadDonationDetail()">
-    <nav class="navbar navbar-light bg-white shadow-sm mb-4">
+    
+    <!-- Decorative floating elements -->
+    <div class="decorative-circle circle-1"></div>
+    <div class="decorative-circle circle-2"></div>
+    <div class="decorative-circle circle-3"></div>
+    
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
         <div class="container">
-            <a class="navbar-brand" href="user-dashboard.html">FundFlow.</a>
-            <a href="user-dashboard.html" class="btn btn-outline-secondary btn-sm">Kembali</a>
+            <a class="navbar-brand d-flex align-items-center" href="../landing-page.html">
+                <i class="bi bi-heart-fill text-primary me-2"></i>
+                <span class="fw-bold">FundFlow.</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item">
+                        <a class="nav-link" href="../landing-page.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="user-dashboard.html">Dashboard</a>
+                    </li>
+                    <li class="nav-item ms-2">
+                        <a href="user-dashboard.html" class="btn btn-outline-secondary btn-sm">
+                            <i class="bi bi-arrow-left me-1"></i>Kembali
+                        </a>
+                    </li>
+                    <li class="nav-item ms-2">
+                        <button onclick="logout()" class="btn btn-outline-danger btn-sm">
+                            <i class="bi bi-box-arrow-right me-1"></i>Logout
+                        </button>
+                    </li>
+                </ul>
+            </div>
         </div>
     </nav>
 
-    <div class="container">
+    <!-- Hero Banner -->
+    <section class="hero-banner text-center">
+        <div class="hero-content">
+            <h1 id="detailTitle" class="display-3 fw-bold mb-3">Bersama Bantu Korban Banjir</h1>
+        </div>
+    </section>
+
+    <div class="container py-4">
         <div class="row">
-            <div class="col-md-7 mb-4">
-                <img id="detailImage" src="" class="w-100 rounded-3 mb-4 shadow-sm" style="max-height: 400px; object-fit: cover;">
-                <h2 id="detailTitle" class="fw-bold mb-3"></h2>
-                <div class="progress mb-2" style="height: 12px;">
-                    <div id="detailProgress" class="progress-bar bg-primary"></div>
+            <!-- Left Column - Campaign Info -->
+            <div class="col-lg-7 mb-4">
+                <div class="donation-card left-card">
+                    <h4 class="fw-bold mb-3">Donatur</h4>
+                    <div class="progress mb-2" style="height: 10px; border-radius: 10px;">
+                        <div id="detailProgress" class="progress-bar" style="background: linear-gradient(90deg, var(--warm-coral), #ff8f6b);"></div>
+                    </div>
+                    <div class="d-flex justify-content-between mb-4">
+                        <div>
+                            <small class="text-muted">Raised</small>
+                            <h5 id="detailCollected" class="fw-bold text-primary mb-0">Rp 0</h5>
+                        </div>
+                        <div class="text-end">
+                            <small class="text-muted">Goal</small>
+                            <h5 id="detailTarget" class="fw-bold mb-0">Rp 0</h5>
+                        </div>
+                    </div>
+
+                    <h5 class="fw-bold mb-3">Deskripsi</h5>
+                    <p id="detailDesc" class="text-muted mb-4">Campaign description will appear here...</p>
+
+                    <div class="prayer-section">
+                        <h6 class="fw-bold mb-3">
+                            <i class="bi bi-chat-heart me-2 text-primary"></i>Prayer and Wishes
+                        </h6>
+                        <div class="prayer-item">
+                            <h6 class="fw-bold mb-1">Wilda</h6>
+                            <p class="text-muted small mb-0">Semoga lekas sembuh</p>
+                        </div>
+                        <div class="prayer-item">
+                            <h6 class="fw-bold mb-1">Wilda</h6>
+                            <p class="text-muted small mb-0">Semoga lekas sembuh</p>
+                        </div>
+                        <div class="prayer-item">
+                            <h6 class="fw-bold mb-1">Wilda</h6>
+                            <p class="text-muted small mb-0">Semoga lekas sembuh</p>
+                        </div>
+                    </div>
                 </div>
-                <div class="d-flex justify-content-between fw-bold mb-4">
-                    <span id="detailCollected" class="text-primary"></span>
-                    <span id="detailTarget" class="text-secondary"></span>
-                </div>
-                <h5 class="fw-bold">Tentang Penggalangan Dana</h5>
-                <p id="detailDesc" class="text-muted text-justify"></p>
             </div>
 
-            <div class="col-md-5">
-                <div class="card p-4 sticky-top" style="top: 20px;">
-                    <h4 class="fw-bold mb-3">Pilih Nominal Donasi</h4>
+            <!-- Right Column - Donation Form -->
+            <div class="col-lg-5">
+                <div class="donation-card right-card" style="position: sticky; top: 100px;">
+                    <h4 class="fw-bold mb-4">Bantu Korban Banjir</h4>
                     
-                    <div class="btn-group w-100 mb-3" role="group">
-                        <input type="radio" class="btn-check" name="nominal" id="nom1" value="10000">
-                        <label class="btn btn-outline-primary" for="nom1">10k</label>
-
-                        <input type="radio" class="btn-check" name="nominal" id="nom2" value="20000">
-                        <label class="btn btn-outline-primary" for="nom2">20k</label>
-
-                        <input type="radio" class="btn-check" name="nominal" id="nom3" value="50000">
-                        <label class="btn btn-outline-primary" for="nom3">50k</label>
+                    <p class="text-muted mb-3">Choose donation amount</p>
+                    
+                    <div class="donation-options">
+                        <div class="donation-option">
+                            <input type="radio" name="nominal" id="nom1" value="10000">
+                            <label for="nom1">
+                                <i class="bi bi-coin me-1"></i> 10.000
+                            </label>
+                        </div>
+                        <div class="donation-option">
+                            <input type="radio" name="nominal" id="nom2" value="20000">
+                            <label for="nom2">
+                                <i class="bi bi-coin me-1"></i> 20.000
+                            </label>
+                        </div>
+                        <div class="donation-option">
+                            <input type="radio" name="nominal" id="nom3" value="50000">
+                            <label for="nom3">
+                                <i class="bi bi-coin me-1"></i> 50.000
+                            </label>
+                        </div>
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label">Nominal Lainnya</label>
-                        <input type="number" id="customNominal" class="form-control" placeholder="Min. 10.000">
+                        <input type="number" id="customNominal" class="form-control" placeholder="Enter a custom amount">
+                        <small class="text-muted">
+                            <i class="bi bi-info-circle me-1"></i>Write in any
+                        </small>
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label">Doa & Dukungan (Opsional)</label>
-                        <textarea class="form-control" rows="2" placeholder="Tulis doa untuk mereka..."></textarea>
+                        <label class="form-label fw-semibold">Add Prayer or Wishes (optional)</label>
+                        <textarea class="form-control" rows="3" placeholder="Write in any"></textarea>
                     </div>
 
                     <div class="mb-4">
-                        <label class="form-label">Metode Pembayaran</label>
-                        <select class="form-select">
-                            <option>Transfer Bank (BCA/Mandiri)</option>
-                            <option>E-Wallet (Gopay/OVO)</option>
-                            <option>QRIS</option>
-                        </select>
+                        <label class="form-label fw-semibold mb-3">Payment Options</label>
+                        
+                        <div class="payment-option" onclick="selectPayment(this)">
+                            <input type="radio" name="payment" value="bank">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5c/Bank_Central_Asia.svg/320px-Bank_Central_Asia.svg.png" alt="BCA" style="width: 40px;">
+                            <span class="fw-semibold">Allpayment</span>
+                        </div>
+                        
+                        <div class="payment-option" onclick="selectPayment(this)">
+                            <input type="radio" name="payment" value="qris">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/QRIS_logo.svg/320px-QRIS_logo.svg.png" alt="QRIS" style="width: 40px;">
+                            <span class="fw-semibold">QRIS</span>
+                        </div>
                     </div>
 
-                    <button onclick="processDonation()" class="btn btn-accent w-100 py-2 fw-bold">Lanjut Pembayaran</button>
+                    <div class="form-check mb-4">
+                        <input class="form-check-input" type="checkbox" id="termsCheck">
+                        <label class="form-check-label small text-muted" for="termsCheck">
+                            Yes, I would like to receive email updates from Plan builds on the
+                            progress that my donation and others help to make possible.
+                        </label>
+                    </div>
+
+                    <button onclick="processDonation()" class="btn-donate">
+                        <i class="bi bi-arrow-right-circle me-2"></i>Continue to payment
+                    </button>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Footer -->
+    <footer class="py-5 bg-dark text-white mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <h5 class="fw-bold mb-3">
+                        <i class="bi bi-heart-fill text-primary me-2"></i>FundFlow.
+                    </h5>
+                    <p class="text-white-50 small">Making the world a better place, one donation at a time. Join our community of changemakers today.</p>
+                    <div class="d-flex gap-2 mt-3">
+                        <a href="#" class="btn btn-outline-light btn-sm rounded-circle">
+                            <i class="bi bi-facebook"></i>
+                        </a>
+                        <a href="#" class="btn btn-outline-light btn-sm rounded-circle">
+                            <i class="bi bi-twitter"></i>
+                        </a>
+                        <a href="#" class="btn btn-outline-light btn-sm rounded-circle">
+                            <i class="bi bi-instagram"></i>
+                        </a>
+                        <a href="#" class="btn btn-outline-light btn-sm rounded-circle">
+                            <i class="bi bi-linkedin"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="col-md-2 mb-4">
+                    <h6 class="fw-bold mb-3">Quick Links</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="../landing-page.html" class="text-white-50 text-decoration-none small">Home</a></li>
+                        <li><a href="user-dashboard.html" class="text-white-50 text-decoration-none small">Dashboard</a></li>
+                        <li><a href="open-fundraise.html" class="text-white-50 text-decoration-none small">Open Fundraise</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <h6 class="fw-bold mb-3">Support</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-white-50 text-decoration-none small">Help Center</a></li>
+                        <li><a href="#" class="text-white-50 text-decoration-none small">Contact Us</a></li>
+                        <li><a href="#" class="text-white-50 text-decoration-none small">Privacy Policy</a></li>
+                        <li><a href="#" class="text-white-50 text-decoration-none small">Terms of Service</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <h6 class="fw-bold mb-3">Newsletter</h6>
+                    <p class="text-white-50 small">Stay updated with our latest campaigns</p>
+                    <div class="input-group input-group-sm">
+                        <input type="email" class="form-control" placeholder="Your email">
+                        <button class="btn btn-primary" type="button">
+                            <i class="bi bi-send"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <hr class="border-secondary my-4">
+            <div class="text-center text-white-50 small">
+                <p class="mb-0">&copy; 2025 FundFlow. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
     <script src="../assets/js/script.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function selectPayment(element) {
+            document.querySelectorAll('.payment-option').forEach(opt => opt.classList.remove('active'));
+            element.classList.add('active');
+            element.querySelector('input[type="radio"]').checked = true;
+        }
+    </script>
 </body>
 </html>
