@@ -1,5 +1,21 @@
 /* assets/js/script.js - Ready for Backend Integration */
 
+// function go(page) {
+//     if (!page) return;
+//     // absolute path: biarkan
+//     if (page.startsWith('/')) {
+//       window.location.href = page;
+//       return;
+//     }
+//     // already has pages/ atau fe/ => gunakan apa adanya
+//     if (page.startsWith('pages/') || page.startsWith('fe/')) {
+//       window.location.href = '/fe/'.replace(/\/$/, '') + '/' + page;
+//       return;
+//     }
+//     // otherwise treat as inside default folder
+//     window.location.href = '/fe/pages/'.replace(/\/$/, '') + '/' + DEFAULT_HTML_FOLDER + '/' + page;
+//   }
+
 // --- 1. AUTHENTICATION ---
 const register = async (e) => {
     e.preventDefault();
@@ -28,7 +44,7 @@ const register = async (e) => {
         localStorage.setItem('currentUser', JSON.stringify(user));
 
         alert('Registrasi berhasil! Silakan login.');
-        window.location.href = 'login.html';
+        window.location.href = '/fe/pages/login.html';
     } catch (error) {
         alert('Registrasi gagal: ' + error.message);
     }
@@ -53,9 +69,9 @@ const login = async (e) => {
         localStorage.setItem('currentUser', JSON.stringify(user));
         
         if (user.role === 'admin') {
-            window.location.href = 'admin-dashboard.html';
+            window.location.href = '/fe/pages/admin-dashboard.html';
         } else {
-            window.location.href = 'user-dashboard.html';
+            window.location.href = '/fe/pages/user-dashboard.html';
         }
     } catch (error) {
         alert('Login gagal: ' + error.message);
@@ -67,11 +83,11 @@ const logout = async () => {
         await apiRequest(API_ENDPOINTS.LOGOUT, 'POST');
         
         localStorage.removeItem('currentUser');
-        window.location.href = 'login.html';
+        window.location.href = '/fe/pages/login.html';
     } catch (error) {
         console.error('Logout error:', error);
         localStorage.removeItem('currentUser');
-        window.location.href = 'login.html';
+        window.location.href = '/fe/pages/login.html';
     }
 };
 
@@ -86,13 +102,13 @@ const checkAuth = async (requiredRole = null) => {
         
         if (requiredRole && user.role !== requiredRole) {
             alert('Akses ditolak!');
-            window.location.href = 'login.html';
+            window.location.href = '/fe/pages/login.html';
             return null;
         }
         
         return user;
     } catch (error) {
-        window.location.href = 'login.html';
+        window.location.href = '/fe/pages/login.html';
         return null;
     }
 };
