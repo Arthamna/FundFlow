@@ -22,7 +22,9 @@ if (strpos($uri, '/be/') === 0) {
 // 3. static frontend files directly under /fe (assets, js, css)
 $file = __DIR__ . '/fe' . $uri;
 if (is_file($file)) {
-    return false; // let PHP built-in server serve it
+    readfile($page);
+    exit;
+    // return false; // let PHP built-in server serve it
 }
 
 // 4. pages shortcut: /login.html -> /fe/pages/login.html
