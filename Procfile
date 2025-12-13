@@ -1,1 +1,1 @@
-web: php -S 0.0.0.0:$PORT -t fe
+web: php -S 0.0.0.0:$PORT -t .
