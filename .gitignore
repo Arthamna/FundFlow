@@ -1,0 +1,5 @@
+*.env
+vendor
+Database.sql
+composer-setup.php
+composer.phar

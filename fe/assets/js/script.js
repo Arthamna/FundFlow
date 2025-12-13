@@ -15,20 +15,18 @@ const register = async (e) => {
 
     try {
         // TODO: Replace with actual API call
-        // const result = await apiRequest(API_ENDPOINTS.REGISTER, 'POST', {
-        //     email, password, username
-        // });
+        const result = await apiRequest(API_ENDPOINTS.REGISTER, 'POST', {
+            email, password, username
+        });
         
-        // Temporary localStorage fallback
-        const users = JSON.parse(localStorage.getItem('users') || '[]');
-        if (users.find(u => u.email === email)) {
-            alert('Email sudah terdaftar!');
+        if (!result.success) {
+            alert('Email atau Password salah!');
             return;
         }
 
-        users.push({ email, password, role: 'user', name: username });
-        localStorage.setItem('users', JSON.stringify(users));
-        
+        const user = result.user;
+        localStorage.setItem('currentUser', JSON.stringify(user));
+
         alert('Registrasi berhasil! Silakan login.');
         window.location.href = 'login.html';
     } catch (error) {
@@ -42,21 +40,16 @@ const login = async (e) => {
     const password = document.getElementById('loginPass').value;
     
     try {
-        // TODO: Replace with actual API call
-        // const result = await apiRequest(API_ENDPOINTS.LOGIN, 'POST', {
-        //     email, password
-        // });
-        // const user = result.user;
-        
-        // Temporary localStorage fallback
-        const users = JSON.parse(localStorage.getItem('users') || '[]');
-        const user = users.find(u => u.email === email && u.password === password);
-        
-        if (!user) {
+        const result = await apiRequest(API_ENDPOINTS.LOGIN, 'POST', {
+            email, password
+        });
+
+        if (!result.success) {
             alert('Email atau Password salah!');
             return;
         }
 
+        const user = result.user;
         localStorage.setItem('currentUser', JSON.stringify(user));
         
         if (user.role === 'admin') {
@@ -71,10 +64,8 @@ const login = async (e) => {
 
 const logout = async () => {
     try {
-        // TODO: Replace with actual API call
-        // await apiRequest(API_ENDPOINTS.LOGOUT, 'POST');
+        await apiRequest(API_ENDPOINTS.LOGOUT, 'POST');
         
-        // Temporary localStorage fallback
         localStorage.removeItem('currentUser');
         window.location.href = 'login.html';
     } catch (error) {
@@ -86,12 +77,8 @@ const logout = async () => {
 
 const checkAuth = async (requiredRole = null) => {
     try {
-        // TODO: Replace with actual API call
-        // const user = await checkSession();
-        
-        // Temporary localStorage fallback
-        const user = JSON.parse(localStorage.getItem('currentUser'));
-        
+        const user = await checkSession();
+    
         if (!user) {
             window.location.href = 'login.html';
             return null;
@@ -119,47 +106,46 @@ const formatRupiah = (number) => {
     }).format(number);
 };
 
-// --- 3. DATA INITIALIZATION (TEMPORARY - FOR DEVELOPMENT ONLY) ---
-const initData = () => {
-    if (!localStorage.getItem('users')) {
-        const users = [
-            { email: 'user@mail.com', password: '123', role: 'user', name: 'John Doe' },
-            { email: 'admin@mail.com', password: '123', role: 'admin', name: 'Super Admin' }
-        ];
-        localStorage.setItem('users', JSON.stringify(users));
-    }
 
-    if (!localStorage.getItem('campaigns')) {
-        const campaigns = [
-            {
-                id: 1,
-                title: 'Bantu Korban Banjir',
-                desc: 'Ribuan warga kehilangan tempat tinggal akibat banjir bandang.',
-                target: 50000000,
-                current: 30000000,
-                gradient: 'linear-gradient(135deg, #FF6B9D 0%, #FFA07A 100%)',
-                status: 'verified',
-                owner: 'user@mail.com'
-            },
-            {
-                id: 2,
-                title: 'Pembangunan Sekolah Dasar',
-                desc: 'Anak-anak di desa X membutuhkan ruang kelas yang layak.',
-                target: 100000000,
-                current: 15000000,
-                gradient: 'linear-gradient(135deg, #02A95C 0%, #6BCF9F 100%)',
-                status: 'pending',
-                owner: 'user@mail.com'
-            }
-        ];
-        localStorage.setItem('campaigns', JSON.stringify(campaigns));
-    }
-};
+// Simpan session ke client dan update UI sederhana
+async function initSessionOnPage(requiredRole = null, options = {}) {
+    // options: { storage: 'session'|'local' } default session
+    const storageType = options.storage === 'session' ? localStorage : sessionStorage;
+    try {
+        const user = await checkSession(); // menggunakan apiRequest yang sudah ada
+        if (!user) {
+            // not logged in -> redirect to login
+            window.location.href = 'login.html';
+            return null;
+        }
 
-// Initialize data only in development
-if (!window.location.hostname.includes('production')) {
-    initData();
+        // jika role wajib, cek
+        if (requiredRole && user.role !== requiredRole) {
+            alert('Akses ditolak!');
+            window.location.href = 'login.html';
+            return null;
+        }
+
+        // Simpan informasi non-sensitif
+        const safeUser = { id: user.id, username: user.username, role: user.role };
+        storageType.setItem('currentUser', JSON.stringify(safeUser));
+
+        // Update UI jika ada elemen dengan id 'username' atau 'user-role'
+        const elName = document.getElementById('username');
+        if (elName) elName.textContent = safeUser.username || '';
+
+        const elRole = document.getElementById('user-role');
+        if (elRole) elRole.textContent = safeUser.role || '';
+
+        return safeUser;
+    } catch (err) {
+        // Jika error network / parsing -> redirect ke login
+        window.location.href = 'login.html';
+        return null;
+    }
 }
+
+
 
 // --- 4. PAGE LOGIC ---
 
@@ -243,7 +229,7 @@ const submitFundraise = (e) => {
     
     const campaigns = JSON.parse(localStorage.getItem('campaigns'));
     const newId = campaigns.length > 0 ? campaigns[campaigns.length - 1].id + 1 : 1;
-    
+    // TO DO : Change to accept image in db
     const newCampaign = {
         id: newId,
         title: document.getElementById('frTitle').value,

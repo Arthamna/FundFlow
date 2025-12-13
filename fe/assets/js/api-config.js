@@ -1,5 +1,5 @@
 // API Configuration
-const API_BASE_URL = '../be';
+const API_BASE_URL = window.location.origin + '/fundflow/be';
 
 const API_ENDPOINTS = {
     // Authentication
@@ -29,10 +29,11 @@ const API_ENDPOINTS = {
 async function apiRequest(endpoint, method = 'GET', data = null) {
     const options = {
         method: method,
+        mode: 'cors',
         headers: {
             'Content-Type': 'application/json',
         },
-        credentials: 'include' // Important for session cookies
+        credentials: 'include' 
     };
 
     if (data && method !== 'GET') {
