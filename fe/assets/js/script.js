@@ -107,43 +107,43 @@ const formatRupiah = (number) => {
 };
 
 
-// Simpan session ke client dan update UI sederhana
-async function initSessionOnPage(requiredRole = null, options = {}) {
-    // options: { storage: 'session'|'local' } default session
-    const storageType = options.storage === 'session' ? localStorage : sessionStorage;
-    try {
-        const user = await checkSession(); // menggunakan apiRequest yang sudah ada
-        if (!user) {
-            // not logged in -> redirect to login
-            window.location.href = 'login.html';
-            return null;
-        }
+// // Simpan session ke client dan update UI sederhana
+// async function initSessionOnPage(requiredRole = null, options = {}) {
+//     // options: { storage: 'session'|'local' } default session
+//     const storageType = options.storage === 'session' ? localStorage : sessionStorage;
+//     try {
+//         const user = await checkSession(); // menggunakan apiRequest yang sudah ada
+//         if (!user) {
+//             // not logged in -> redirect to login
+//             window.location.href = '/pages/login.html';
+//             return null;
+//         }
 
-        // jika role wajib, cek
-        if (requiredRole && user.role !== requiredRole) {
-            alert('Akses ditolak!');
-            window.location.href = 'login.html';
-            return null;
-        }
+//         // jika role wajib, cek
+//         if (requiredRole && user.role !== requiredRole) {
+//             alert('Akses ditolak!');
+//             window.location.href = 'login.html';
+//             return null;
+//         }
 
-        // Simpan informasi non-sensitif
-        const safeUser = { id: user.id, username: user.username, role: user.role };
-        storageType.setItem('currentUser', JSON.stringify(safeUser));
+//         // Simpan informasi non-sensitif
+//         const safeUser = { id: user.id, username: user.username, role: user.role };
+//         storageType.setItem('currentUser', JSON.stringify(safeUser));
 
-        // Update UI jika ada elemen dengan id 'username' atau 'user-role'
-        const elName = document.getElementById('username');
-        if (elName) elName.textContent = safeUser.username || '';
+//         // Update UI jika ada elemen dengan id 'username' atau 'user-role'
+//         const elName = document.getElementById('username');
+//         if (elName) elName.textContent = safeUser.username || '';
 
-        const elRole = document.getElementById('user-role');
-        if (elRole) elRole.textContent = safeUser.role || '';
+//         const elRole = document.getElementById('user-role');
+//         if (elRole) elRole.textContent = safeUser.role || '';
 
-        return safeUser;
-    } catch (err) {
-        // Jika error network / parsing -> redirect ke login
-        window.location.href = 'login.html';
-        return null;
-    }
-}
+//         return safeUser;
+//     } catch (err) {
+//         // Jika error network / parsing -> redirect ke login
+//         window.location.href = 'login.html';
+//         return null;
+//     }
+// }
 
 
 
