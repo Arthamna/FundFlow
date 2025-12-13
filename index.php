@@ -1,23 +1,37 @@
 <?php
-// fe/index.php
-// Jika pengunjung ke '/', tampilkan landing-page.html.
-// Untuk request ke static file lain, biarkan built-in server melayani file tersebut.
+// index.php (root)
+// minimal router: frontend in /fe, backend in /be
 
 $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 
-// jika root -> tampilkan landing-page.html
+// 1. root -> landing page
 if ($uri === '/' || $uri === '/index.php') {
-    header('Content-Type: text/html; charset=utf-8');
-    readfile(__DIR__ . '/landing-page.html');
+    readfile(__DIR__ . '/fe/landing-page.html');
     exit;
 }
 
-// jika file statis ada, kembalikan false agar built-in server mengirimkannya
-$requested = __DIR__ . $uri;
-if (file_exists($requested) && is_file($requested)) {
-    return false;
+// 2. backend API: /be/...
+if (strpos($uri, '/be/') === 0) {
+    $file = __DIR__ . $uri;
+    if (is_file($file)) {
+        require $file;
+        exit;
+    }
 }
 
-// fallback 404
+// 3. static frontend files directly under /fe (assets, js, css)
+$file = __DIR__ . '/fe' . $uri;
+if (is_file($file)) {
+    return false; // let PHP built-in server serve it
+}
+
+// 4. pages shortcut: /login.html -> /fe/pages/login.html
+$page = __DIR__ . '/fe/pages' . $uri;
+if (is_file($page)) {
+    readfile($page);
+    exit;
+}
+
+// 5. 404
 http_response_code(404);
 echo "404 Not Found";
