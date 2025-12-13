@@ -1,5 +1,5 @@
 // API Configuration
-const API_BASE_URL = window.location.origin + '/fundflow/be';
+const API_BASE_URL = window.location.origin + '/be';
 
 const API_ENDPOINTS = {
     // Authentication
