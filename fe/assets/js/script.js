@@ -1,6 +1,6 @@
 /* assets/js/script.js */
 
-// --- 1. AUTHENTICATION ---
+// ---  AUTHENTICATION ---
 const register = async (e) => {
     e.preventDefault();
     const email = document.getElementById('regEmail').value;
@@ -106,8 +106,8 @@ const formatRupiah = (number) => {
     }).format(number);
 };
 
-// --- 4. PAGE LOGIC ---
-
+// HELPERS 
+const esc = s => String(s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"}[c]));
 // LOAD CAMPAIGNS (USER DASHBOARD)
 const loadUserDashboard = async () => {
     const user = await checkAuth('user');
@@ -117,94 +117,110 @@ const loadUserDashboard = async () => {
     const nameEl = document.getElementById('userNameDisplay');
     if (nameEl) nameEl.innerText = `Hi, ${displayName}`;
     
-    const campaigns = JSON.parse(localStorage.getItem('campaigns') || '[]');
+    try {
+        // HIT API untuk ambil campaigns dari database
+        const response = await apiRequest(API_ENDPOINTS.GET_CAMPAIGNS, 'GET');
+        const campaigns = response.data || [];
+        // console.log('campaigns:', campaigns);
+        // console.log('user:', user); // Debug: cek user object
 
-    const verifiedContainer = document.getElementById('campaignList');
-    const myContainer = document.getElementById('myCampaignList'); // Untuk status pending/rejected
+        const verifiedContainer = document.getElementById('campaignList');
+        const myContainer = document.getElementById('myCampaignList');
 
-    // if (verifiedContainer) verifiedContainer.innerHTML = '';
-    if (myContainer) myContainer.innerHTML = '';
+        // RESET myContainer saja (untuk status pengajuan)
+        if (myContainer) myContainer.innerHTML = '';
 
-    campaigns.forEach(c => {
-        if (!c) return;
+        let hasMy = false;
 
-        if (c.status === 'Verified') {
-            const percent = (c.collected / c.target) * 100;
-            const gradients = [
-                'linear-gradient(135deg, #FF6B9D 0%, #FFA07A 100%)',
-                'linear-gradient(135deg, #02A95C 0%, #6BCF9F 100%)',
-                'linear-gradient(135deg, #60D1F6 0%, #1FA2FF 100%)',
-                'linear-gradient(135deg, #FFD93D 0%, #FFB088 100%)',
-                'linear-gradient(135deg, #1FA2FF 0%, #A78BFA 100%)',
-                'linear-gradient(135deg, #6BCF9F 0%, #00D9C0 100%)'
-            ];
-            const randomGradient = gradients[c.id % gradients.length];
+        campaigns.forEach(c => {
+            if (!c) return;
+
+            const imageUrl = c.image_path ? `../${c.image_path}` : '../assets/images/donate-page.png';
+
+            // Tampilkan di verified container (section Help Them!)
+            if (c.status === 'Verified') {
+                const percent = c.target ? (c.collected / c.target) * 100 : 0;
+                const gradients = [
+                    'linear-gradient(135deg, #FF6B9D 0%, #FFA07A 100%)',
+                    'linear-gradient(135deg, #02A95C 0%, #6BCF9F 100%)',
+                    'linear-gradient(135deg, #60D1F6 0%, #1FA2FF 100%)',
+                    'linear-gradient(135deg, #FFD93D 0%, #FFB088 100%)',
+                    'linear-gradient(135deg, #1FA2FF 0%, #A78BFA 100%)',
+                    'linear-gradient(135deg, #6BCF9F 0%, #00D9C0 100%)'
+                ];
+                const randomGradient = gradients[c.id % gradients.length];
+
+                if (verifiedContainer) verifiedContainer.innerHTML += `
+                    <div class="col">
+                        <div class="card campaign-card h-100 border-0 shadow-sm">
+                            <div class="card-img-top" style="
+                                height: 200px;
+                                background: ${randomGradient}, url('${imageUrl}');
+                                background-size: cover;
+                                background-position: center;
+                                background-blend-mode: overlay;
+                            "></div>
+                            <div class="card-body">
+                                <h5 class="card-title fw-bold mb-2">${esc(c.title)}</h5>
+                                <p class="card-text text-muted small mb-3">${esc((c.desc||'').substring(0, 80))}...</p>
+                                <div class="progress mb-2" style="height: 8px;">
+                                    <div class="progress-bar bg-primary" style="width: ${percent}%"></div>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <small class="text-muted">${formatRupiah(c.collected)} raised</small>
+                                    <small class="fw-bold text-primary">${Math.round(percent)}%</small>
+                                </div>
+                                <a href="donation-detail.html?id=${c.id}" class="btn btn-primary btn-sm w-100">
+                                    <i class="bi bi-hand-thumbs-up me-1"></i>Donate
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // Tampilkan campaign milik user (SEMUA STATUS: Pending/Rejected/Verified)
+            // Perbaiki kondisi checking owner
+            const isOwner = (c.owner === user.email) || 
+                           (c.owner === user.username) || 
+                           (c.owner_name === user.username);
             
-            if (verifiedContainer) verifiedContainer.innerHTML += `
-                <div class="col-md-4 mb-4">
-                    <div class="card h-100">
-                        <div class="card-img-top" style="height: 200px; background: ${randomGradient}, url('../assets/images/donate-page.png'); background-size: cover; background-position: center; background-blend-mode: overlay;"></div>
-                        <div class="card-body">
-                            <h5 class="card-title">${c.title}</h5>
-                            <p class="card-text text-muted small">${(c.desc||'').substring(0, 80)}...</p>
-                            <div class="progress mb-2">
-                                <div class="progress-bar bg-primary" style="width: ${percent}%"></div>
+            // console.log('Checking ownership:', {
+            //     campaignOwner: c.owner,
+            //     campaignOwnerName: c.owner_name,
+            //     userEmail: user.email,
+            //     userUsername: user.username,
+            //     isOwner: isOwner
+            // });
+
+            if (isOwner) {
+                hasMy = true;
+                const badgeClass = c.status === 'Verified' ? 'bg-success' : (c.status === 'Pending' ? 'bg-warning' : 'bg-danger');
+                if (myContainer) myContainer.innerHTML += `
+                    <div class="d-flex align-items-center mb-3 p-3 bg-white rounded shadow-sm">
+                        <img src="${imageUrl}" alt="${esc(c.title)}" style="width:100px;height:70px;object-fit:cover;border-radius:6px;">
+                        <div class="ms-3 w-100">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <div class="fw-semibold">${esc(c.title)}</div>
+                                    <div class="small text-muted">${esc((c.desc||'').substring(0,60))}...</div>
+                                </div>
+                                <span class="badge ${badgeClass} text-white">${esc(c.status)}</span>
                             </div>
-                            <div class="d-flex justify-content-between small mb-3">
-                                <span>Terkumpul: ${formatRupiah(c.collected)}</span>
-                                <span class="text-end">Target: ${formatRupiah(c.target)}</span>
-                            </div>
-                            <a href="donation-detail.html?id=${c.id}" class="btn btn-primary w-100">Detail</a>
+                            <div class="small text-muted mt-1">Target: ${formatRupiah(c.target)}</div>
                         </div>
                     </div>
-                </div>
-            `;
+                `;
+            }
+        });
+
+        if (myContainer && !hasMy) {
+            myContainer.innerHTML = `<p class="text-muted">Belum ada pengajuan.</p>`;
         }
-
-        if (c.owner === user.email || c.owner === user.username) {
-            let badgeClass = c.status === 'Verified' ? 'bg-success' : (c.status === 'Pending' ? 'bg-warning' : 'bg-danger');
-        }
-    });
-};
-
-
-const loadAdminDashboard = () => {
-    checkAuth('admin');
-    const campaigns = JSON.parse(localStorage.getItem('campaigns'));
-    const listContainer = document.getElementById('adminCampaignList');
-    listContainer.innerHTML = '';
-
-    campaigns.forEach(c => {
-        let actionButtons = '';
-        if (c.status === 'Pending') {
-            actionButtons = `
-                <button onclick="updateStatus(${c.id}, 'Verified')" class="btn btn-sm btn-success">Approve</button>
-                <button onclick="updateStatus(${c.id}, 'Rejected')" class="btn btn-sm btn-danger">Reject</button>
-            `;
-        } else if (c.status === 'Rejected') {
-            actionButtons = `<span class="text-muted small">Rejected</span>`;
-        } else {
-             actionButtons = `<span class="text-success small">Accepted</span>`;
-        }
-
-        listContainer.innerHTML += `
-            <div class="card mb-3 p-3">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div class="d-flex align-items-center">
-                        <img src="${c.image}" class="rounded me-3" width="80" height="60" style="object-fit:cover">
-                        <div>
-                            <h6 class="mb-1">${c.title}</h6>
-                            <span class="badge ${c.status === 'Verified' ? 'bg-success' : (c.status === 'Pending' ? 'bg-warning' : 'bg-danger')}">${c.status}</span>
-                            <small class="text-muted ms-2">Oleh: ${c.owner}</small>
-                        </div>
-                    </div>
-                    <div>
-                        ${actionButtons}
-                    </div>
-                </div>
-            </div>
-        `;
-    });
+    } catch (error) {
+        console.error('Error loading campaigns:', error);
+        alert('Gagal memuat data campaign');
+    }
 };
 
 const updateStatus = (id, status, notes = '') => {
@@ -218,29 +234,56 @@ const updateStatus = (id, status, notes = '') => {
     }
 };
 
-const submitFundraise = (e) => {
+const submitFundraise = async (e) => {
     e.preventDefault();
-    const user = checkAuth('user');
     
-    const campaigns = JSON.parse(localStorage.getItem('campaigns'));
-    const newId = campaigns.length > 0 ? campaigns[campaigns.length - 1].id + 1 : 1;
-    // TO DO : Change to accept image in db
-    const newCampaign = {
-        id: newId,
-        title: document.getElementById('frTitle').value,
-        desc: document.getElementById('frDesc').value,
-        target: parseInt(document.getElementById('frTarget').value),
-        collected: 0,
-        image: 'https://images.unsplash.com/photo-1532629345422-7515f3d16bb6?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80', // Dummy image for now
-        status: 'Pending',
-        owner: user.email,
-        notes: ''
-    };
-
-    campaigns.push(newCampaign);
-    localStorage.setItem('campaigns', JSON.stringify(campaigns));
-    alert('Pengajuan berhasil! Menunggu persetujuan admin.');
-    window.location.href = 'user-dashboard.html';
+    // Ambil file dari input
+    const fileInput = document.getElementById('fileUpload');
+    const file = fileInput.files[0];
+    
+    if (!file) {
+        alert('Mohon pilih gambar sampul!');
+        return;
+    }
+    
+    // Validasi tipe file
+    if (!file.type.startsWith('image/')) {
+        alert('File harus berupa gambar!');
+        return;
+    }
+    
+    // Validasi ukuran file (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+        alert('Ukuran file maksimal 5MB!');
+        return;
+    }
+    
+    // Buat FormData untuk kirim file
+    const formData = new FormData();
+    formData.append('judul', document.getElementById('frTitle').value);
+    formData.append('deskripsi', document.getElementById('frDesc').value);
+    formData.append('target_dana', document.getElementById('frTarget').value);
+    formData.append('image', file);
+    
+    try {
+        const response = await fetch(API_ENDPOINTS.CREATE_CAMPAIGN, {
+            method: 'POST',
+            credentials: 'include',
+            body: formData // Jangan set Content-Type, browser akan set otomatis
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            alert('Pengajuan berhasil! Menunggu persetujuan admin.');
+            window.location.href = '../pages/user-dashboard.html';
+        } else {
+            alert('Gagal mengajukan donasi: ' + result.message);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Terjadi kesalahan saat mengajukan donasi.');
+    }
 };
 
 // DONATION DETAIL PAGE
@@ -250,7 +293,7 @@ const loadDonationDetail = () => {
     const campaigns = JSON.parse(localStorage.getItem('campaigns'));
     const campaign = campaigns.find(c => c.id === id);
 
-    if (!campaign) return window.location.href = '../pages/user-dashboard.html';
+    // if (!campaign) return window.location.href = '../pages/user-dashboard.html';
 
     // Update hero banner background
     const heroBanner = document.querySelector('.hero-banner');
@@ -269,15 +312,91 @@ const loadDonationDetail = () => {
     document.getElementById('detailProgress').style.width = `${percent}%`;
     document.getElementById('detailCollected').innerText = formatRupiah(campaign.collected);
     document.getElementById('detailTarget').innerText = formatRupiah(campaign.target);
-
-    // Handle Donate Logic
-    window.processDonation = () => {
-        let amount = document.querySelector('input[name="nominal"]:checked')?.value;
-        if (!amount) amount = document.getElementById('customNominal').value;
-        
-        if (!amount) return alert('Pilih nominal donasi');
-
-        // Redirect to payment page with amount
-        window.location.href = `../fe/payment.html?amount=${amount}&id=${id}`;
-    };
 };
+
+// PROCESS DONATION 
+window.processDonation = async () => {
+    let amount = document.querySelector('input[name="nominal"]:checked')?.value;
+    if (!amount) amount = document.getElementById('customNominal').value;
+    
+    if (!amount || parseInt(amount) <= 0) {
+        alert('Pilih nominal donasi');
+        return;
+    }
+
+    const params = new URLSearchParams(window.location.search);
+    const id = parseInt(params.get('id'));
+
+    try {
+        // Call Xendit API untuk create Virtual Account (tidak blocking)
+        await createXenditVirtualAccount(amount);
+        
+        // Redirect to payment page
+        window.location.href = `../pages/payment.html?amount=${amount}&id=${id}`;
+    } catch (error) {
+        console.error('Xendit API error (non-blocking):', error);
+        // Tetap redirect meskipun Xendit error
+        window.location.href = `../pages/payment.html?amount=${amount}&id=${id}`;
+    }
+};
+
+// XENDIT API INTEGRATION
+const XENDIT_API_KEY = 'xnd_development_EujkzeRhF0i1WiZG9CqJF2lTYPC8ed9o7QRlzM48Hw1rvaDNFC6hcCvXvQ8Qm'; 
+
+// Create Virtual Account di Xendit
+async function createXenditVirtualAccount(amount) {
+    try {
+        const response = await fetch('https://api.xendit.co/callback_virtual_accounts', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Basic ' + btoa(XENDIT_API_KEY + ':')
+            },
+            body: JSON.stringify({
+                external_id: '502524',
+                bank_code: 'BCA',
+                name: 'Client'
+            })
+        });
+
+        if (!response.ok) {
+            console.warn('Xendit VA creation failed:', response.status);
+            return null;
+        }
+
+        const data = await response.json();
+        console.log('Xendit VA created:', data);
+        return data;
+    } catch (error) {
+        console.error('Xendit VA creation error:', error);
+        return null;
+    }
+}
+
+// Simulate Payment di Xendit
+async function simulateXenditPayment(amount) {
+    try {
+        const response = await fetch('https://api.xendit.co/callback_virtual_accounts/external_id=502524/simulate_payment', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Basic ' + btoa(XENDIT_API_KEY + ':')
+            },
+            body: JSON.stringify({
+                amount: parseInt(amount)
+            })
+        });
+
+        if (!response.ok) {
+            console.warn('Xendit payment simulation failed:', response.status);
+            return null;
+        }
+
+        const data = await response.json();
+        console.log('Xendit payment simulated:', data);
+        return data;
+    } catch (error) {
+        console.error('Xendit payment simulation error:', error);
+        return null;
+    }
+}

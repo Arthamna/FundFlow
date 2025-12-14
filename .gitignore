@@ -3,3 +3,4 @@ vendor
 Database.sql
 composer-setup.php
 composer.phar
+uploads
