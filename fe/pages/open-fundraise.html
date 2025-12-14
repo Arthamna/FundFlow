@@ -9,8 +9,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/fe/assets/css/style.css">
-    <link rel="stylesheet" href="/fe/assets/css/landing.css">
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/landing.css">
     <style>
         :root {
             --primary-green: #02A95C;
@@ -301,7 +301,6 @@
     </style>
 </head>
 <body onload="checkAuth('user')">
-    
     <!-- Decorative floating elements -->
     <div class="decorative-circle circle-1"></div>
     <div class="decorative-circle circle-2"></div>
@@ -310,7 +309,7 @@
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
         <div class="container">
-            <a class="navbar-brand d-flex align-items-center" href="/fe/landing-page.html">
+            <a class="navbar-brand d-flex align-items-center" href="../landing-page.html">
                 <i class="bi bi-heart-fill text-primary me-2"></i>
                 <span class="fw-bold">FundFlow.</span>
             </a>
@@ -320,10 +319,10 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto align-items-center">
                     <li class="nav-item">
-                        <a class="nav-link" href="/fe/landing-page.html">Home</a>
+                        <a class="nav-link" href="../landing-page.html">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/fe/pages/user-dashboard.html">Dashboard</a>
+                        <a class="nav-link" href="../pages/user-dashboard.html">Dashboard</a>
                     </li>
                     <li class="nav-item ms-2">
                         <button onclick="logout()" class="btn btn-outline-danger btn-sm">
@@ -419,9 +418,9 @@
                 <div class="col-md-2 mb-4">
                     <h6 class="fw-bold mb-3">Quick Links</h6>
                     <ul class="list-unstyled">
-                        <li><a href="/fe/landing-page.html" class="text-white-50 text-decoration-none small">Home</a></li>
-                        <li><a href="/fe/pages/user-dashboard.html" class="text-white-50 text-decoration-none small">Dashboard</a></li>
-                        <li><a href="/fe/pages/open-fundraise.html" class="text-white-50 text-decoration-none small">Open Fundraise</a></li>
+                        <li><a href="../landing-page.html" class="text-white-50 text-decoration-none small">Home</a></li>
+                        <li><a href="../pages/user-dashboard.html" class="text-white-50 text-decoration-none small">Dashboard</a></li>
+                        <li><a href="../pages/open-fundraise.html" class="text-white-50 text-decoration-none small">Open Fundraise</a></li>
                     </ul>
                 </div>
                 <div class="col-md-3 mb-4">
@@ -451,7 +450,8 @@
         </div>
     </footer>
 
-    <script src="/fe/assets/js/script.js"></script>
+    <script src="../assets/js/api-config.js"></script>
+    <script src="../assets/js/script.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

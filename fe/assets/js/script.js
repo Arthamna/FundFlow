@@ -1,20 +1,4 @@
-/* assets/js/script.js - Ready for Backend Integration */
-
-// function go(page) {
-//     if (!page) return;
-//     // absolute path: biarkan
-//     if (page.startsWith('/')) {
-//       window.location.href = page;
-//       return;
-//     }
-//     // already has pages/ atau fe/ => gunakan apa adanya
-//     if (page.startsWith('pages/') || page.startsWith('fe/')) {
-//       window.location.href = '/fe/'.replace(/\/$/, '') + '/' + page;
-//       return;
-//     }
-//     // otherwise treat as inside default folder
-//     window.location.href = '/fe/pages/'.replace(/\/$/, '') + '/' + DEFAULT_HTML_FOLDER + '/' + page;
-//   }
+/* assets/js/script.js */
 
 // --- 1. AUTHENTICATION ---
 const register = async (e) => {
@@ -30,7 +14,6 @@ const register = async (e) => {
     }
 
     try {
-        // TODO: Replace with actual API call
         const result = await apiRequest(API_ENDPOINTS.REGISTER, 'POST', {
             email, password, username
         });
@@ -44,7 +27,7 @@ const register = async (e) => {
         localStorage.setItem('currentUser', JSON.stringify(user));
 
         alert('Registrasi berhasil! Silakan login.');
-        window.location.href = '/fe/pages/login.html';
+        window.location.href = '../pages/login.html';
     } catch (error) {
         alert('Registrasi gagal: ' + error.message);
     }
@@ -69,9 +52,9 @@ const login = async (e) => {
         localStorage.setItem('currentUser', JSON.stringify(user));
         
         if (user.role === 'admin') {
-            window.location.href = '/fe/pages/admin-dashboard.html';
+            window.location.href = '../pages/admin-dashboard.html';
         } else {
-            window.location.href = '/fe/pages/user-dashboard.html';
+            window.location.href = '../pages/user-dashboard.html';
         }
     } catch (error) {
         alert('Login gagal: ' + error.message);
@@ -83,32 +66,33 @@ const logout = async () => {
         await apiRequest(API_ENDPOINTS.LOGOUT, 'POST');
         
         localStorage.removeItem('currentUser');
-        window.location.href = '/fe/pages/login.html';
+        window.location.href = '../pages/login.html';
     } catch (error) {
         console.error('Logout error:', error);
         localStorage.removeItem('currentUser');
-        window.location.href = '/fe/pages/login.html';
+        window.location.href = '../pages/login.html';
     }
 };
 
 const checkAuth = async (requiredRole = null) => {
     try {
-        const user = await checkSession();
+        // pastikan pakai API yang sudah dipublish ke window
+        const user = await (window.API && window.API.checkSession ? window.API.checkSession() : checkSession());
     
         if (!user) {
-            window.location.href = 'login.html';
+            window.location.href = '../pages/login.html';
             return null;
         }
         
         if (requiredRole && user.role !== requiredRole) {
             alert('Akses ditolak!');
-            window.location.href = '/fe/pages/login.html';
+            window.location.href = '../pages/login.html';
             return null;
         }
         
         return user;
     } catch (error) {
-        window.location.href = '/fe/pages/login.html';
+        window.location.href = '../pages/login.html';
         return null;
     }
 };
@@ -122,63 +106,28 @@ const formatRupiah = (number) => {
     }).format(number);
 };
 
-
-// // Simpan session ke client dan update UI sederhana
-// async function initSessionOnPage(requiredRole = null, options = {}) {
-//     // options: { storage: 'session'|'local' } default session
-//     const storageType = options.storage === 'session' ? localStorage : sessionStorage;
-//     try {
-//         const user = await checkSession(); // menggunakan apiRequest yang sudah ada
-//         if (!user) {
-//             // not logged in -> redirect to login
-//             window.location.href = '/pages/login.html';
-//             return null;
-//         }
-
-//         // jika role wajib, cek
-//         if (requiredRole && user.role !== requiredRole) {
-//             alert('Akses ditolak!');
-//             window.location.href = 'login.html';
-//             return null;
-//         }
-
-//         // Simpan informasi non-sensitif
-//         const safeUser = { id: user.id, username: user.username, role: user.role };
-//         storageType.setItem('currentUser', JSON.stringify(safeUser));
-
-//         // Update UI jika ada elemen dengan id 'username' atau 'user-role'
-//         const elName = document.getElementById('username');
-//         if (elName) elName.textContent = safeUser.username || '';
-
-//         const elRole = document.getElementById('user-role');
-//         if (elRole) elRole.textContent = safeUser.role || '';
-
-//         return safeUser;
-//     } catch (err) {
-//         // Jika error network / parsing -> redirect ke login
-//         window.location.href = 'login.html';
-//         return null;
-//     }
-// }
-
-
-
 // --- 4. PAGE LOGIC ---
 
 // LOAD CAMPAIGNS (USER DASHBOARD)
-const loadUserDashboard = () => {
-    const user = checkAuth('user');
-    document.getElementById('userNameDisplay').innerText = `Hi, ${user.name}`;
+const loadUserDashboard = async () => {
+    const user = await checkAuth('user');
+    if (!user) return; 
+
+    const displayName = user.username || user.name || 'User';
+    const nameEl = document.getElementById('userNameDisplay');
+    if (nameEl) nameEl.innerText = `Hi, ${displayName}`;
     
-    const campaigns = JSON.parse(localStorage.getItem('campaigns'));
+    const campaigns = JSON.parse(localStorage.getItem('campaigns') || '[]');
+
     const verifiedContainer = document.getElementById('campaignList');
     const myContainer = document.getElementById('myCampaignList'); // Untuk status pending/rejected
 
-    verifiedContainer.innerHTML = '';
-    myContainer.innerHTML = '';
+    // if (verifiedContainer) verifiedContainer.innerHTML = '';
+    if (myContainer) myContainer.innerHTML = '';
 
     campaigns.forEach(c => {
-        // Kartu Donasi Umum (Hanya Verified)
+        if (!c) return;
+
         if (c.status === 'Verified') {
             const percent = (c.collected / c.target) * 100;
             const gradients = [
@@ -191,13 +140,13 @@ const loadUserDashboard = () => {
             ];
             const randomGradient = gradients[c.id % gradients.length];
             
-            verifiedContainer.innerHTML += `
+            if (verifiedContainer) verifiedContainer.innerHTML += `
                 <div class="col-md-4 mb-4">
                     <div class="card h-100">
                         <div class="card-img-top" style="height: 200px; background: ${randomGradient}, url('../assets/images/donate-page.png'); background-size: cover; background-position: center; background-blend-mode: overlay;"></div>
                         <div class="card-body">
                             <h5 class="card-title">${c.title}</h5>
-                            <p class="card-text text-muted small">${c.desc.substring(0, 80)}...</p>
+                            <p class="card-text text-muted small">${(c.desc||'').substring(0, 80)}...</p>
                             <div class="progress mb-2">
                                 <div class="progress-bar bg-primary" style="width: ${percent}%"></div>
                             </div>
@@ -212,59 +161,13 @@ const loadUserDashboard = () => {
             `;
         }
 
-        // List Kampanye Saya (Pending/Rejected/Verified)
-        if (c.owner === user.email) {
+        if (c.owner === user.email || c.owner === user.username) {
             let badgeClass = c.status === 'Verified' ? 'bg-success' : (c.status === 'Pending' ? 'bg-warning' : 'bg-danger');
-            let actionBtn = '';
-            
-            // Logika Appeal
-            if(c.status === 'Rejected') {
-                actionBtn = `<button onclick="showAppealModal(${c.id}, '${c.notes}')" class="btn btn-sm btn-outline-danger mt-2">Lihat Alasan & Banding</button>`;
-            }
-
-            myContainer.innerHTML += `
-                <div class="col-md-4 mb-4">
-                    <div class="card h-100 border-${badgeClass === 'bg-danger' ? 'danger' : 'light'}">
-                        <div class="card-body">
-                            <div class="badge ${badgeClass} mb-2">${c.status}</div>
-                            <h6 class="card-title">${c.title}</h6>
-                            <p class="small text-muted">Target: ${formatRupiah(c.target)}</p>
-                            ${actionBtn}
-                        </div>
-                    </div>
-                </div>
-            `;
         }
     });
 };
 
-// OPEN FUNDRAISE
-const submitFundraise = (e) => {
-    e.preventDefault();
-    const user = checkAuth('user');
-    
-    const campaigns = JSON.parse(localStorage.getItem('campaigns'));
-    const newId = campaigns.length > 0 ? campaigns[campaigns.length - 1].id + 1 : 1;
-    // TO DO : Change to accept image in db
-    const newCampaign = {
-        id: newId,
-        title: document.getElementById('frTitle').value,
-        desc: document.getElementById('frDesc').value,
-        target: parseInt(document.getElementById('frTarget').value),
-        collected: 0,
-        image: 'https://images.unsplash.com/photo-1532629345422-7515f3d16bb6?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80', // Dummy image for now
-        status: 'Pending',
-        owner: user.email,
-        notes: ''
-    };
 
-    campaigns.push(newCampaign);
-    localStorage.setItem('campaigns', JSON.stringify(campaigns));
-    alert('Pengajuan berhasil! Menunggu persetujuan admin.');
-    window.location.href = 'user-dashboard.html';
-};
-
-// ADMIN DASHBOARD
 const loadAdminDashboard = () => {
     checkAuth('admin');
     const campaigns = JSON.parse(localStorage.getItem('campaigns'));
@@ -276,12 +179,12 @@ const loadAdminDashboard = () => {
         if (c.status === 'Pending') {
             actionButtons = `
                 <button onclick="updateStatus(${c.id}, 'Verified')" class="btn btn-sm btn-success">Approve</button>
-                <button onclick="rejectCampaign(${c.id})" class="btn btn-sm btn-danger">Reject</button>
+                <button onclick="updateStatus(${c.id}, 'Rejected')" class="btn btn-sm btn-danger">Reject</button>
             `;
         } else if (c.status === 'Rejected') {
-            actionButtons = `<span class="text-muted small">Rejected (Waiting Appeal)</span>`;
+            actionButtons = `<span class="text-muted small">Rejected</span>`;
         } else {
-             actionButtons = `<span class="text-success small">Active</span>`;
+             actionButtons = `<span class="text-success small">Accepted</span>`;
         }
 
         listContainer.innerHTML += `
@@ -315,25 +218,29 @@ const updateStatus = (id, status, notes = '') => {
     }
 };
 
-const rejectCampaign = (id) => {
-    const reason = prompt("Masukkan alasan penolakan:");
-    if (reason) {
-        updateStatus(id, 'Rejected', reason);
-    }
-};
+const submitFundraise = (e) => {
+    e.preventDefault();
+    const user = checkAuth('user');
+    
+    const campaigns = JSON.parse(localStorage.getItem('campaigns'));
+    const newId = campaigns.length > 0 ? campaigns[campaigns.length - 1].id + 1 : 1;
+    // TO DO : Change to accept image in db
+    const newCampaign = {
+        id: newId,
+        title: document.getElementById('frTitle').value,
+        desc: document.getElementById('frDesc').value,
+        target: parseInt(document.getElementById('frTarget').value),
+        collected: 0,
+        image: 'https://images.unsplash.com/photo-1532629345422-7515f3d16bb6?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80', // Dummy image for now
+        status: 'Pending',
+        owner: user.email,
+        notes: ''
+    };
 
-// APPEAL (BANDING)
-const showAppealModal = (id, notes) => {
-    const newReason = prompt(`Alasan Ditolak: "${notes}"\n\nMasukkan argumen banding (akan mengubah status menjadi Pending):`);
-    if (newReason) {
-        const campaigns = JSON.parse(localStorage.getItem('campaigns'));
-        const index = campaigns.findIndex(c => c.id === id);
-        campaigns[index].status = 'Pending';
-        campaigns[index].notes = `Appeal: ${newReason}`; // Append appeal note
-        localStorage.setItem('campaigns', JSON.stringify(campaigns));
-        alert('Banding dikirim!');
-        location.reload();
-    }
+    campaigns.push(newCampaign);
+    localStorage.setItem('campaigns', JSON.stringify(campaigns));
+    alert('Pengajuan berhasil! Menunggu persetujuan admin.');
+    window.location.href = 'user-dashboard.html';
 };
 
 // DONATION DETAIL PAGE
@@ -343,7 +250,7 @@ const loadDonationDetail = () => {
     const campaigns = JSON.parse(localStorage.getItem('campaigns'));
     const campaign = campaigns.find(c => c.id === id);
 
-    if (!campaign) return window.location.href = 'user-dashboard.html';
+    if (!campaign) return window.location.href = '../pages/user-dashboard.html';
 
     // Update hero banner background
     const heroBanner = document.querySelector('.hero-banner');
@@ -371,6 +278,6 @@ const loadDonationDetail = () => {
         if (!amount) return alert('Pilih nominal donasi');
 
         // Redirect to payment page with amount
-        window.location.href = `payment.html?amount=${amount}&id=${id}`;
+        window.location.href = `../fe/payment.html?amount=${amount}&id=${id}`;
     };
 };

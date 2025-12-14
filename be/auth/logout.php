@@ -1,11 +1,12 @@
 <?php
+// File: be/auth/logout.php
 
 require __DIR__ . '/session.php';
 
 $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
 if ($origin) {
     header('Access-Control-Allow-Origin: ' . $origin);
-} 
+}
 
 $allowedOrigins = [
     'http://localhost',
@@ -18,9 +19,8 @@ if (isset($_SERVER['HTTP_ORIGIN']) && in_array($_SERVER['HTTP_ORIGIN'], $allowed
     header('Access-Control-Allow-Credentials: true');
 }
 
-
 header('Access-Control-Allow-Credentials: true');
-header('Access-Control-Allow-Methods: GET, OPTIONS');
+header('Access-Control-Allow-Methods: POST, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type');
 header('Content-Type: application/json');
 
@@ -29,24 +29,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit;
 }
 
-$secure = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off');
+// Hapus semua data session
+$_SESSION = [];
 
-if (isset($_SESSION['user_id'])) {
-    echo json_encode([
-        'success' => true,
-        'user' => [
-            'id' => (int)$_SESSION['user_id'],
-            'username' => $_SESSION['username'] ?? null,
-            'role' => $_SESSION['role'] ?? 'user'
-        ]
-    ]);
-    exit;
+// Hapus session cookie
+if (ini_get('session.use_cookies')) {
+    $params = session_get_cookie_params();
+    setcookie(
+        session_name(),
+        '',
+        time() - 42000,
+        $params['path'],
+        $params['domain'],
+        $params['secure'],
+        $params['httponly']
+    );
 }
 
+// Destroy session
+session_destroy();
+
+http_response_code(200);
 echo json_encode([
     'success' => true,
-    'session_id' => session_id(),
-    'session_data' => $_SESSION
+    'message' => 'Logout berhasil.'
 ]);
-
 exit;

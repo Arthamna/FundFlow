@@ -1,12 +1,24 @@
 <?php
 // File: be/auth/login.php
 
+require __DIR__ . '/session.php';
+
 $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
 if ($origin) {
     header('Access-Control-Allow-Origin: ' . $origin);
-} else {
-    header('Access-Control-Allow-Origin: *');
 }
+
+$allowedOrigins = [
+    'http://localhost',
+    'http://localhost:5173',
+    'http://127.0.0.1'
+];
+
+if (isset($_SERVER['HTTP_ORIGIN']) && in_array($_SERVER['HTTP_ORIGIN'], $allowedOrigins)) {
+    header('Access-Control-Allow-Origin: ' . $_SERVER['HTTP_ORIGIN']);
+    header('Access-Control-Allow-Credentials: true');
+}
+
 header('Access-Control-Allow-Credentials: true');
 header('Access-Control-Allow-Methods: POST, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type');
@@ -16,10 +28,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200);
     exit;
 }
-
-$secure = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off');
-session_set_cookie_params(['lifetime' => 0, 'path' => '/', 'secure' => $secure, 'httponly' => true, 'samesite' => 'Lax']);
-session_start();
 
 // Load Database class
 require __DIR__ . '/../Database.php';
@@ -74,6 +82,13 @@ if ($stmt = $db->prepare($sql)) {
     // Verifikasi password
     if (password_verify($password, $user['password_hash'])) {
         // Sukses: regenerate session id
+
+        // echo json_encode([
+        //     'session_id' => session_id(),
+        //     'save_path' => session_save_path(),
+        //     'session_data' => $_SESSION
+        // ]);
+
         session_regenerate_id(true);
         $_SESSION['user_id'] = (int)$user['id_user'];
         $_SESSION['username'] = $user['username'];
@@ -86,6 +101,8 @@ if ($stmt = $db->prepare($sql)) {
             $upStmt->execute();
             $upStmt->close();
         }
+
+        session_write_close();
 
         http_response_code(200);
         echo json_encode([
