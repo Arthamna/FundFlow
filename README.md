@@ -24,8 +24,7 @@ This project Frontend is build using CSS + HTML with bootstrap integration for i
 3. **User Dashboard:** Pending requested campaign and view active campaigns.
 4. **Admin Dashboard:** Processing requested campaign.
 5. **Donation Details:** Mentions donation details and donation forms.
-5. **Forms:** Login/Register pages, fundraise submission, and a payment page with a countdown timer.
-6. **Responsiveness:** Adapts to Desktop, Tablet, and Mobile devices.
+5. **4 Forms:** Login/Register pages, fundraise submission, and a payment page with a countdown timer.
     
 #### B. Backend Development
 
