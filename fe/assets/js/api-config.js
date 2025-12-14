@@ -1,6 +1,6 @@
 
-const API_BASE_URL = window.location.origin + '/fundflow/be';
-// const API_BASE_URL = window.location.origin + '/be'; // // deployment
+// const API_BASE_URL = window.location.origin + '/fundflow/be';
+const API_BASE_URL = window.location.origin + '/be'; // // deployment
 
 const API_ENDPOINTS = {
 // Authentication
