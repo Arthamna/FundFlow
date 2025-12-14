@@ -32,7 +32,6 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
 
 $input = json_decode(file_get_contents("php://input"), true);
 $id = $input['id_ajuan'] ?? 0;
-$reason = $input['reason'] ?? 'Rejected by admin';
 
 if ($id <= 0) {
     http_response_code(400);
@@ -41,14 +40,20 @@ if ($id <= 0) {
 }
 
 $db = Database::getInstance()->getConnection();
-$stmt = $db->prepare("UPDATE ajuan_donasi SET status = 'Rejected', id_admin_fk = ?, catatan = ? WHERE id_ajuan = ?");
+
+// FIX: Hapus koma sebelum WHERE, hapus catatan karena tidak ada di schema
+$stmt = $db->prepare("UPDATE ajuan_donasi SET status = 'Rejected', id_admin_fk = ? WHERE id_ajuan = ?");
 $adminId = $_SESSION['user_id'];
-$stmt->bind_param('isi', $adminId, $reason, $id);
+
+// FIX: bind_param 'ii' untuk 2 integer (adminId, id)
+$stmt->bind_param('ii', $adminId, $id);
 
 if ($stmt->execute()) {
     echo json_encode(['success' => true, 'message' => 'Campaign rejected']);
 } else {
     http_response_code(500);
-    echo json_encode(['success' => false, 'message' => 'Database error']);
+    echo json_encode(['success' => false, 'message' => 'Database error: ' . $stmt->error]);
 }
+
+$stmt->close();
 ?>

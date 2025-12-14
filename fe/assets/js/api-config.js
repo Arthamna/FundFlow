@@ -10,7 +10,7 @@ CHECK_AUTH: `${API_BASE_URL}/auth/check.php`,
 
 // Campaigns (ajuans)
 GET_CAMPAIGNS: `${API_BASE_URL}/campaigns/list.php`,
-GET_CAMPAIGN: `${API_BASE_URL}/campaigns/get.php`,       // expects ?id=
+GET_CAMPAIGN: `${API_BASE_URL}/campaigns/get.php`,       
 CREATE_CAMPAIGN: `${API_BASE_URL}/campaigns/create.php`,
 UPDATE_CAMPAIGN: `${API_BASE_URL}/campaigns/update.php`,
 DELETE_CAMPAIGN: `${API_BASE_URL}/campaigns/delete.php`,

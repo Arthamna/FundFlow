@@ -103,7 +103,7 @@ window.loadAdminDashboard = async function() {
         }).join('');
     } catch (error) {
         console.error('Error loading admin dashboard:', error);
-        alert('Gagal memuat data campaign');
+        // alert('Gagal memuat data campaign');
     }
 };
 
@@ -123,15 +123,16 @@ async function approveCampaignAPI(id) {
 
 // REJECT CAMPAIGN - HIT API
 async function rejectCampaignAPI(id) {
-    try {
-        await apiRequest(API_ENDPOINTS.REJECT_CAMPAIGN, 'POST', { 
-            id_ajuan: id, 
-            reason: 'Rejected by admin' 
-        });
-        alert('Campaign rejected successfully!');
-        loadAdminDashboard();
-    } catch (error) {
-        console.error('Error rejecting campaign:', error);
-        alert('Failed to reject campaign');
+    if (confirm('Reject this campaign?')) {
+        try {
+            await apiRequest(API_ENDPOINTS.REJECT_CAMPAIGN, 'POST', { 
+                id_ajuan: id
+            });
+            alert('Campaign rejected successfully!');
+            loadAdminDashboard();
+        } catch (error) {
+            console.error('Error rejecting campaign:', error);
+            alert('Failed to reject campaign: ' + (error.message || 'Unknown error'));
+        }
     }
 }
