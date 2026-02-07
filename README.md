@@ -3,11 +3,11 @@ Final Project Web Programming.
 Online donation system that allows submitting donation requests and making donations, with user and admin management to separate functions and authorization.
 
 Kelompok 18 :
-| Nama           | NRP        |      
-| ---            | ---        |
-| Qurrata Ayun Kamil | 5025241031 | 
-| Bintang Ilham Pabeta | 5025241152 | 
-| Hartmann Kanisius Galla' Massang | 5025241160 | 
+| Nama           |    
+| ---            |    
+| Qurrata Ayun Kamil |   
+| Bintang Ilham Pabeta | 
+| Hartmann Kanisius Galla' Massang | 
 
 ## Local Setup
 ```
